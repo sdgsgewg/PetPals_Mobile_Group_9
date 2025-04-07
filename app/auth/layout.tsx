@@ -7,12 +7,12 @@ const AuthLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 
 const styles = StyleSheet.create({
   container: {
+    width: "100%",
     flex: 1,
     backgroundColor: "#f3f4f6", // Equivalent to bg-gray-100
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 128, // Approximate for pt-32
-    paddingBottom: 96, // Approximate for pb-24
+    paddingVertical: 40,
   },
 });
 

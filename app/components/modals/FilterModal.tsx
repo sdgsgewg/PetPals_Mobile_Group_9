@@ -46,7 +46,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ filterType }) => {
               onPress={handleCloseFilterModal}
               style={styles.closeButton}
             >
-              <X size={28} color="#fff" />
+              <X size={28} color="#808080" />
             </TouchableOpacity>
           </View>
 
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   resetButton: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#bbb",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,

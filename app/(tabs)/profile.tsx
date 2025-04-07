@@ -1,7 +1,5 @@
 import { StyleSheet, Platform, TouchableOpacity, Text } from "react-native";
 
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -42,9 +40,7 @@ export default function ProfileScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Profile</ThemedText>
       </ThemedView>
-      <ThemedText>
-        This app includes example code to help you get started.
-      </ThemedText>
+      <ThemedText>Profile Page.</ThemedText>
 
       {/* Custom Login and Register Buttons */}
       <ThemedView style={styles.buttonContainer}>

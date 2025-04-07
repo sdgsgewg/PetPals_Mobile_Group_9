@@ -89,8 +89,14 @@ export function PetsReducer(state: PetState, action: GlobalAction) {
       return { ...state };
     case GlobalActionType.EDIT_PET:
       return { ...state };
+    case GlobalActionType.REMOVE_PET:
+      return { ...state };
     case GlobalActionType.GET_OWNER_PETS:
       return { ...state, ownerPets: action.payload };
+    case GlobalActionType.SET_LOADING:
+      return { ...state, loading: action.payload };
+    case GlobalActionType.SET_ERROR:
+      return { ...state, error: action.payload };
     default:
       return state;
   }

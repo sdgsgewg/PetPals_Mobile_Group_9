@@ -18,12 +18,19 @@ const ServiceList: React.FC<ServiceListProps> = ({ filteredServices }) => {
   }
 
   return (
-    <View>
+    <View style={styles.container}>
       {filteredServices.length > 0 ? (
         <FlatList
           data={filteredServices}
           keyExtractor={(item) => item.slug}
-          renderItem={({ item }) => <ServiceCard service={item} />}
+          renderItem={({ item }) => (
+            <View style={styles.cardWrapper}>
+              <ServiceCard service={item} />
+            </View>
+          )}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          contentContainerStyle={styles.contentContainer}
         />
       ) : (
         <ItemNotFound
@@ -35,5 +42,22 @@ const ServiceList: React.FC<ServiceListProps> = ({ filteredServices }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+  },
+  contentContainer: {
+    paddingBottom: 24,
+  },
+  row: {
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  cardWrapper: {
+    flex: 1,
+    marginRight: 8,
+  },
+});
 
 export default ServiceList;

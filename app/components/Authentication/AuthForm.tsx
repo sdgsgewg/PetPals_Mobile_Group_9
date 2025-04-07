@@ -40,8 +40,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ authType }) => {
               style={styles.link}
               onPress={() => {
                 authType === "Login"
-                  ? router.push("/auth/login")
-                  : router.push("/auth/register");
+                  ? router.push("/auth/register")
+                  : router.push("/auth/login");
               }}
             >
               {authType === "Login" ? "Register here" : "Login here"}
@@ -55,14 +55,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ authType }) => {
 
 const styles = StyleSheet.create({
   scrollContainer: {
+    width: "100%",
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 50,
   },
   formContainer: {
-    width: "80%",
-    padding: 16,
+    width: "100%",
+    maxWidth: 512, // atau 420, sesuai keinginan
+    paddingHorizontal: 30,
+    paddingVertical: 40,
     backgroundColor: "#fff",
     borderRadius: 8,
     shadowColor: "#000",
@@ -71,6 +74,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+
   title: {
     fontSize: 24,
     fontWeight: "bold",

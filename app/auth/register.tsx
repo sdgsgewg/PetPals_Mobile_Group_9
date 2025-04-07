@@ -9,10 +9,7 @@ const Register = () => {
       <AuthLayout>
         <View
           style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingVertical: 50,
+            width: "100%",
           }}
         >
           <AuthForm authType="Register" />

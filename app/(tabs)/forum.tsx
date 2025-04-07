@@ -34,7 +34,10 @@ const ForumScreen = () => {
   if (error) {
     return (
       <NormalContent>
-        <PageNotFound image_url="/img/page-not-found.png" message="" />
+        <PageNotFound
+          image_url={require("@/assets/img/page-not-found.png")}
+          message=""
+        />
       </NormalContent>
     );
   }

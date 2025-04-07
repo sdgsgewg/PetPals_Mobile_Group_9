@@ -7,9 +7,7 @@ const Login = () => {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <AuthLayout>
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+        <View style={{ width: "60%" }}>
           <AuthForm authType="Login" />
         </View>
       </AuthLayout>

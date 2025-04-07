@@ -9,7 +9,7 @@ interface SelectFieldProps {
   label: string;
   name: string;
   value: number;
-  onChange: (value: number) => void;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: IRole[] | ISpecies[] | IServiceCategory[];
   error?: string;
 }

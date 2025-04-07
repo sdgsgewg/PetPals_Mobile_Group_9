@@ -4,6 +4,7 @@ import { IServiceTransaction } from "@/app/interface/transaction/IServiceTransac
 import { IAdoptionTransaction } from "@/app/interface/transaction/IAdoptionTransaction";
 
 export interface TransactionState {
+  transaction: IAdoptionTransaction | IServiceTransaction;
   transactions: ITransaction[] | IAdoptionTransaction[] | IServiceTransaction[];
   transactionType: string;
   loading: boolean;
@@ -11,6 +12,7 @@ export interface TransactionState {
 }
 
 export const initialState: TransactionState = {
+  transaction: {} as IAdoptionTransaction | IServiceTransaction,
   transactions: [],
   transactionType: "All",
   loading: false,
@@ -26,6 +28,10 @@ export function TransactionsReducer(
       return { ...state, transactionType: action.payload };
     case GlobalActionType.GET_TRANSACTION_HISTORY:
       return { ...state, transactions: action.payload };
+    case GlobalActionType.GET_ADOPTION_TRANSACTION_DETAIL:
+      return { ...state, transaction: action.payload };
+    case GlobalActionType.GET_SERVICE_TRANSACTION_DETAIL:
+      return { ...state, transaction: action.payload };
     case GlobalActionType.GET_ADOPTION_TRANSACTION_REQUEST:
       return { ...state, transactions: action.payload };
     case GlobalActionType.GET_SERVICE_TRANSACTION_REQUEST:

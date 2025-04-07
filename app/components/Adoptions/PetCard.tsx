@@ -27,7 +27,8 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
       {/* Pet Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: getImageUrlByBreed(pet?.species?.name, pet?.breed) }}
+          // source={{ uri: getImageUrlByBreed(pet?.species?.name, pet?.breed) }}
+          source={require("@/assets/img/pets.jpg")}
           style={styles.image}
         />
       </View>

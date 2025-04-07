@@ -1,15 +1,15 @@
-import { IForumCategory } from "../interface/forum/IForumCategory";
-import { IForumComment } from "../interface/forum/IForumComment";
-import { IForumPost } from "../interface/forum/IForumPost";
 import { IPet } from "../interface/pet/IPet";
-import { ISpecies } from "../interface/pet/ISpecies";
+import { IRole } from "../interface/user/IRole";
 import { IService } from "../interface/service/IService";
 import { IServiceCategory } from "../interface/service/IServiceCategory";
+import { ISpecies } from "../interface/pet/ISpecies";
+import { ITransaction } from "../interface/transaction/ITransaction";
+import { IUser } from "../interface/user/IUser";
+import { IForumPost } from "../interface/forum/IForumPost";
+import { IForumCategory } from "../interface/forum/IForumCategory";
+import { IForumComment } from "../interface/forum/IForumComment";
 import { IAdoptionTransaction } from "../interface/transaction/IAdoptionTransaction";
 import { IServiceTransaction } from "../interface/transaction/IServiceTransaction";
-import { ITransaction } from "../interface/transaction/ITransaction";
-import { IRole } from "../interface/user/IRole";
-import { IUser } from "../interface/user/IUser";
 
 export enum GlobalActionType {
   // Global
@@ -42,6 +42,7 @@ export enum GlobalActionType {
   RESET_NEW_PET = "RESET_NEW_PET",
   ADD_NEW_PET = "ADD_NEW_PET",
   EDIT_PET = "EDIT_PET",
+  REMOVE_PET = "REMOVE_PET",
   GET_OWNER_PETS = "GET_OWNER_PETS",
 
   // Adoptions
@@ -62,11 +63,14 @@ export enum GlobalActionType {
   RESET_NEW_SERVICE = "RESET_NEW_SERVICE",
   ADD_NEW_SERVICE = "ADD_NEW_SERVICE",
   EDIT_SERVICE = "EDIT_SERVICE",
+  REMOVE_SERVICE = "REMOVE_SERVICE",
   GET_PROVIDER_SERVICES = "GET_PROVIDER_SERVICES",
 
   // Transactions
   SET_TRANSACTION_TYPE = "SET_TRANSACTION_TYPE",
   GET_TRANSACTION_HISTORY = "GET_TRANSACTION_HISTORY",
+  GET_ADOPTION_TRANSACTION_DETAIL = "GET_ADOPTION_TRANSACTION_DETAIL",
+  GET_SERVICE_TRANSACTION_DETAIL = "GET_SERVICE_TRANSACTION_DETAIL",
   GET_ADOPTION_TRANSACTION_REQUEST = "GET_ADOPTION_TRANSACTION_REQUEST",
   GET_SERVICE_TRANSACTION_REQUEST = "GET_SERVICE_TRANSACTION_REQUEST",
   GET_TRANSACTION_DETAIL = "GET_TRANSACTION_DETAIL",
@@ -165,6 +169,9 @@ export type GlobalAction =
       type: GlobalActionType.EDIT_PET;
     }
   | {
+      type: GlobalActionType.REMOVE_PET;
+    }
+  | {
       type: GlobalActionType.GET_OWNER_PETS;
       payload: IPet[];
     }
@@ -211,6 +218,9 @@ export type GlobalAction =
       type: GlobalActionType.EDIT_SERVICE;
     }
   | {
+      type: GlobalActionType.REMOVE_SERVICE;
+    }
+  | {
       type: GlobalActionType.GET_PROVIDER_SERVICES;
       payload: IService[];
     }
@@ -223,6 +233,14 @@ export type GlobalAction =
   | {
       type: GlobalActionType.GET_TRANSACTION_HISTORY;
       payload: ITransaction[];
+    }
+  | {
+      type: GlobalActionType.GET_ADOPTION_TRANSACTION_DETAIL;
+      payload: IAdoptionTransaction;
+    }
+  | {
+      type: GlobalActionType.GET_SERVICE_TRANSACTION_DETAIL;
+      payload: IServiceTransaction;
     }
   | {
       type: GlobalActionType.GET_ADOPTION_TRANSACTION_REQUEST;

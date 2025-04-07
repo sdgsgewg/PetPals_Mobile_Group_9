@@ -37,7 +37,6 @@ const LoginInputField = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 10,

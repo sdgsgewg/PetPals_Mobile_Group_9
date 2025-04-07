@@ -10,6 +10,7 @@ import ContactPersonCard from "@/app/components/Cards/ContactPersonCard";
 import ItemDetailCard from "@/app/components/Cards/ItemDetailCard";
 import BookServiceModal from "@/app/components/modals/BookServiceModal";
 import MessageModal from "@/app/components/modals/MessageModal";
+import NormalContent from "../components/ContentTemplate/NormalContent";
 
 const ServiceDetail = () => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -57,11 +58,14 @@ const ServiceDetail = () => {
     );
   }
 
-  if (error || !service) {
+  if (error || !service || Object.keys(service).length === 0) {
     return (
-      <View style={styles.container}>
-        <PageNotFound image_url="/img/page-not-found.png" message="" />
-      </View>
+      <NormalContent>
+        <PageNotFound
+          image_url={require("@/assets/img/page-not-found.png")}
+          message=""
+        />
+      </NormalContent>
     );
   }
 

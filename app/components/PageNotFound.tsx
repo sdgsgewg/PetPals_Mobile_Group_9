@@ -2,14 +2,14 @@ import React from "react";
 import { View, Image, Text, StyleSheet } from "react-native";
 
 interface PageNotFoundProps {
-  image_url: string;
+  image_url: any;
   message: string;
 }
 
 const PageNotFound: React.FC<PageNotFoundProps> = ({ image_url, message }) => {
   return (
     <View style={styles.container}>
-      <Image source={{ uri: image_url }} style={styles.image} />
+      <Image source={image_url} style={styles.image} />
       <Text style={styles.message}>{message}</Text>
     </View>
   );

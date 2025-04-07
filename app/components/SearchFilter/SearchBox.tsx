@@ -33,7 +33,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ placeholder, searchType }) => {
         onChangeText={handleInputChange}
       />
       <TouchableOpacity style={styles.button} onPress={fetchFunction}>
-        <FontAwesome name="search" size={20} color="#fff" />
+        <FontAwesome name="search" size={18} color="#fff" />
       </TouchableOpacity>
     </View>
   );
@@ -41,6 +41,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ placeholder, searchType }) => {
 
 const styles = StyleSheet.create({
   container: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 10,
@@ -49,13 +50,19 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    width: "90%",
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: 8,
     fontSize: 16,
     color: "#333",
     backgroundColor: "#fff",
+    borderColor: "#d1d5db",
+    borderWidth: 1,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
   },
   button: {
+    width: "10%",
     backgroundColor: "#3b82f6",
     padding: 10,
     justifyContent: "center",

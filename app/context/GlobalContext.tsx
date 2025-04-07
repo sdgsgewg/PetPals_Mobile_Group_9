@@ -11,9 +11,10 @@ interface GlobalContextType {
   isFilterModalOpen: boolean;
   handleOpenFilterModal: () => void;
   handleCloseFilterModal: () => void;
-  getImageUrlByBreed: (species: string, breed: string) => string;
-  getImageUrlByServiceCategory: (categoryName: string) => string;
-  formattedPrice: (price: number) => string;
+  getImageUrlByBreed: (species: string, breed: string) => string | null;
+  getImageUrlByServiceCategory: (categoryName: string) => string | null;
+  formattedAge: (age: number) => string | null;
+  formattedPrice: (price: number | string) => string;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -37,46 +38,37 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   };
 
   const getImageUrlByBreed = (species: string, breed: string) => {
-    if (!species || !breed) return "";
-    const modifiedSpecies = species?.toLowerCase();
-    const modifiedBreed = breed
-      ?.split(" ")
-      .map((word) => word.toLowerCase())
-      .join("-");
-    return `/img/breed/${modifiedSpecies}/${modifiedBreed}.jpg`;
+    // if (!species || !breed) return null;
+    // const modifiedSpecies = species?.toLowerCase();
+    // const modifiedBreed = breed
+    //   ?.split(" ")
+    //   .map((word) => word.toLowerCase())
+    //   .join("-");
+    // return `/img/breed/${modifiedSpecies}/${modifiedBreed}.jpg`;
+    return `/img/pets.jpg`;
   };
 
-  const serviceCategoryImages: { [key: string]: any } = {
-    "grooming-hewan": require("@/assets/img/services/grooming-hewan.jpg"),
-    "pelatihan-hewan": require("@/assets/img/services/pelatihan-hewan.jpg"),
-    "penitipan-hewan": require("@/assets/img/services/penitipan-hewan.jpg"),
-    "penjaga-hewan": require("@/assets/img/services/penjaga-hewan.jpg"),
-  };
-
-  const getImageUrlByServiceCategory = (categoryName: string): any => {
-    if (!categoryName) return "";
-
+  const getImageUrlByServiceCategory = (categoryName: string) => {
+    // if (!categoryName) return null;
     // const modifiedCategoryName = categoryName
     //   ?.split(" ")
     //   .map((word) => word.toLowerCase())
     //   .join("-");
     // return `/img/services/${modifiedCategoryName}.jpg`;
-
-    const key = categoryName
-      .split(" ")
-      .map((word) => word.toLowerCase())
-      .join("-");
-
-    console.log(serviceCategoryImages[key]);
-
-    return serviceCategoryImages[key] || null;
+    return `/img/services.jpg`;
   };
 
-  const formattedPrice = (price: number) => {
-    return price.toLocaleString("id-ID", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
+  const formattedAge = (age: number) => {
+    if (age === 0) return "Unknown";
+    if (age < 1) return `${age * 10} months`;
+    return `${age} years`;
+  };
+
+  const formattedPrice = (value: number | string): string => {
+    if (!value) return "";
+    const number =
+      typeof value === "string" ? parseInt(value.replace(/\D/g, "")) : value;
+    return new Intl.NumberFormat("id-ID").format(number);
   };
 
   return (
@@ -90,6 +82,7 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
         handleCloseFilterModal,
         getImageUrlByBreed,
         getImageUrlByServiceCategory,
+        formattedAge,
         formattedPrice,
       }}
     >

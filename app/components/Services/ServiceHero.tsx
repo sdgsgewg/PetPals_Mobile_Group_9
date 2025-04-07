@@ -9,6 +9,7 @@ const ServiceHero = () => {
   const { filters } = useServices();
 
   const backgroundImage = require("@/assets/img/services.jpg");
+
   return (
     <View style={styles.container}>
       {/* Background Image */}
@@ -35,7 +36,7 @@ const ServiceHero = () => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: "50%",
+    height: "40%",
   },
   imageBackground: {
     flex: 1,
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
+    width: "100%",
     fontSize: 32,
     fontWeight: "bold",
     color: "white",

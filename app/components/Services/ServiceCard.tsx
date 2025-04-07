@@ -23,40 +23,55 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   };
 
   return (
-    <TouchableOpacity onPress={() => goToServiceDetail(router, service.slug)}>
-      <CardLayout>
-        <View style={styles.imageContainer}>
-          <Image
-            source={getImageUrlByServiceCategory(service?.category?.name)}
-            style={styles.image}
-          />
-        </View>
-        <View style={styles.contentContainer}>
-          <View>
-            <Text style={styles.categoryText}>{service?.category?.name}</Text>
-            <Text style={styles.nameText}>{service.name}</Text>
-            <View style={styles.locationContainer}>
-              <FontAwesomeIcon
-                icon={faLocationDot}
-                size={12}
-                style={styles.icon}
-              />
-              <Text style={styles.cityText}>{service.city}</Text>
-            </View>
+    <TouchableOpacity
+      onPress={() => goToServiceDetail(router, service.slug)}
+      style={styles.card}
+    >
+      {/* Service Image */}
+      <View style={styles.imageContainer}>
+        <Image
+          // source={getImageUrlByServiceCategory(service?.category?.name)}
+          source={require("@/assets/img/services.jpg")}
+          style={styles.image}
+        />
+      </View>
+      <View style={styles.infoContainer}>
+        <View>
+          <Text style={styles.categoryText}>{service?.category?.name}</Text>
+          <Text style={styles.nameText}>{service.name}</Text>
+          <View style={styles.locationContainer}>
+            <FontAwesomeIcon
+              icon={faLocationDot}
+              size={12}
+              style={styles.icon}
+            />
+            <Text style={styles.cityText}>{service.city}</Text>
           </View>
+
           <Text style={styles.priceText}>
             {"Rp " + formattedPrice(service.price)}
           </Text>
         </View>
-      </CardLayout>
+      </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
+  card: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 10,
+  },
   imageContainer: {
     width: "100%",
-    height: "55%",
+    height: 180,
     overflow: "hidden",
   },
   image: {
@@ -64,10 +79,7 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "cover",
   },
-  contentContainer: {
-    width: "100%",
-    height: "45%",
-    justifyContent: "space-between",
+  infoContainer: {
     padding: 12,
   },
   categoryText: {

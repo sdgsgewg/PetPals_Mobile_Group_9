@@ -44,7 +44,10 @@ export default function Services() {
   if (error) {
     return (
       <NormalContent>
-        <PageNotFound image_url="/img/page-not-found.png" message="" />
+        <PageNotFound
+          image_url={require("@/assets/img/page-not-found.png")}
+          message=""
+        />
       </NormalContent>
     );
   }
@@ -52,11 +55,10 @@ export default function Services() {
   return (
     <BigHeroContent>
       <ServiceHero />
-
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <div className="px-4 sm:px-6 md:px-8 lg:px-12">
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.serviceListWrapper}>
           <ServiceList filteredServices={services} />
-        </div>
+        </View>
       </ScrollView>
       <FilterModal filterType="services" />
     </BigHeroContent>
@@ -64,31 +66,11 @@ export default function Services() {
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+  scrollContainer: {
+    flexGrow: 1,
+    marginVertical: 40,
   },
-  serviceCard: {
-    backgroundColor: "#fff",
-    padding: 10,
-    marginVertical: 8,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-  },
-  serviceImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  serviceListWrapper: {
+    paddingHorizontal: 16,
   },
 });

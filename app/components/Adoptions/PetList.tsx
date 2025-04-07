@@ -1,5 +1,5 @@
 import React from "react";
-import { View, FlatList, ActivityIndicator } from "react-native";
+import { View, FlatList, StyleSheet } from "react-native";
 import PetCard from "./PetCard";
 import { IPet } from "@/app/interface/pet/IPet";
 import { usePets } from "@/app/context/pets/PetsContext";
@@ -13,17 +13,22 @@ interface PetListProps {
 const PetList: React.FC<PetListProps> = ({ filteredPets }) => {
   const { loading } = usePets();
 
-  if (loading) {
-    return <Loading />;
-  }
+  if (loading) return <Loading />;
 
   return (
-    <View>
+    <View style={styles.container}>
       {filteredPets.length > 0 ? (
         <FlatList
           data={filteredPets}
           keyExtractor={(item) => item.slug}
-          renderItem={({ item }) => <PetCard pet={item} />}
+          renderItem={({ item }) => (
+            <View style={styles.cardWrapper}>
+              <PetCard pet={item} />
+            </View>
+          )}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          contentContainerStyle={styles.contentContainer}
         />
       ) : (
         <ItemNotFound
@@ -35,5 +40,22 @@ const PetList: React.FC<PetListProps> = ({ filteredPets }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+  },
+  contentContainer: {
+    paddingBottom: 24,
+  },
+  row: {
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  cardWrapper: {
+    flex: 1,
+    marginRight: 8,
+  },
+});
 
 export default PetList;

@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, ReactNode, useContext, useReducer } from "react";
 import api from "@/lib/apiClient";
 import { GlobalActionType } from "../GlobalActions";
@@ -7,6 +9,7 @@ import { IAdoptionTransaction } from "@/app/interface/transaction/IAdoptionTrans
 import { IServiceTransaction } from "@/app/interface/transaction/IServiceTransaction";
 
 interface TransactionsContextType {
+  transaction: IAdoptionTransaction | IServiceTransaction;
   transactions: ITransaction[] | IAdoptionTransaction[] | IServiceTransaction[];
   transactionType: string;
   setTransactionType: (transactionType: string) => void;
@@ -14,6 +17,8 @@ interface TransactionsContextType {
     adopterId: number,
     transactionType: string
   ) => Promise<void>;
+  fetchAdoptionTransactionDetail: (adoptionId: number) => Promise<void>;
+  fetchServiceTransactionDetail: (transactionId: number) => Promise<void>;
   fetchAdoptionTransactionRequest: (ownerId: number) => Promise<void>;
   fetchServiceTransactionRequest: (providerId: number) => Promise<void>;
   loading: boolean;
@@ -67,6 +72,86 @@ export function TransactionsProvider({ children }: { children: ReactNode }) {
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: "Fetch transaction history failed",
+        });
+      }
+    } finally {
+      dispatch({ type: GlobalActionType.SET_LOADING, payload: false });
+    }
+  };
+
+  const fetchAdoptionTransactionDetail = async (adoptionId: number) => {
+    dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+
+    try {
+      const response = await api.get(
+        `/adoption-transaction-detail/${adoptionId}`
+      );
+
+      if (response.data) {
+        dispatch({
+          type: GlobalActionType.GET_ADOPTION_TRANSACTION_DETAIL,
+          payload: response.data,
+        });
+      } else {
+        console.error("Invalid API response format:", response.data);
+        dispatch({
+          type: GlobalActionType.SET_ERROR,
+          payload: "Fetch adoption transaction detail failed",
+        });
+      }
+    } catch (error: any) {
+      if (error.response?.status === 404 || error.response?.status === 400) {
+        console.warn("No transactions found for the given AdoptionId.");
+        // Set transaksi kosong tanpa error
+        dispatch({
+          type: GlobalActionType.GET_ADOPTION_TRANSACTION_DETAIL,
+          payload: {} as IAdoptionTransaction,
+        });
+      } else {
+        console.error("Error fetching adoption transaction detail:", error);
+        dispatch({
+          type: GlobalActionType.SET_ERROR,
+          payload: "Fetch adoption transaction detail failed",
+        });
+      }
+    } finally {
+      dispatch({ type: GlobalActionType.SET_LOADING, payload: false });
+    }
+  };
+
+  const fetchServiceTransactionDetail = async (transactionId: number) => {
+    dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+
+    try {
+      const response = await api.get(
+        `/service-transaction-detail/${transactionId}`
+      );
+
+      if (response.data) {
+        dispatch({
+          type: GlobalActionType.GET_SERVICE_TRANSACTION_DETAIL,
+          payload: response.data,
+        });
+      } else {
+        console.error("Invalid API response format:", response.data);
+        dispatch({
+          type: GlobalActionType.SET_ERROR,
+          payload: "Fetch service transaction detail failed",
+        });
+      }
+    } catch (error: any) {
+      if (error.response?.status === 404 || error.response?.status === 400) {
+        console.warn("No transactions found for the given TransactionId.");
+        // Set transaksi kosong tanpa error
+        dispatch({
+          type: GlobalActionType.GET_SERVICE_TRANSACTION_DETAIL,
+          payload: {} as IServiceTransaction,
+        });
+      } else {
+        console.error("Error fetching service transaction detail:", error);
+        dispatch({
+          type: GlobalActionType.SET_ERROR,
+          payload: "Fetch service transaction detail failed",
         });
       }
     } finally {
@@ -157,9 +242,12 @@ export function TransactionsProvider({ children }: { children: ReactNode }) {
   return (
     <TransactionsContext.Provider
       value={{
-        transactionType: state.transactionType,
+        transaction: state.transaction,
         transactions: state.transactions,
+        transactionType: state.transactionType,
         fetchTransactionHistory,
+        fetchAdoptionTransactionDetail,
+        fetchServiceTransactionDetail,
         fetchAdoptionTransactionRequest,
         fetchServiceTransactionRequest,
         setTransactionType,

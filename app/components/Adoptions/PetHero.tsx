@@ -8,12 +8,14 @@ import { usePets } from "@/app/context/pets/PetsContext";
 const PetHero = () => {
   const { filters } = usePets();
 
-  const backgroundImage =
-    filters.species === ""
-      ? require("@/assets/img/pets.jpg")
-      : {
-          uri: `@/assets/img/species/${filters.species.toLowerCase()}.jpg`,
-        };
+  // const backgroundImage =
+  //   filters.species === ""
+  //     ? require("@/assets/img/pets.jpg")
+  //     : {
+  //         uri: `@/assets/img/species/${filters.species.toLowerCase()}.jpg`,
+  //       };
+
+  const backgroundImage = require("@/assets/img/pets.jpg");
 
   return (
     <View style={styles.container}>
@@ -41,7 +43,7 @@ const PetHero = () => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: "50%",
+    height: "40%",
   },
   imageBackground: {
     flex: 1,
@@ -61,6 +63,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
+    width: "100%",
     fontSize: 32,
     fontWeight: "bold",
     color: "white",
