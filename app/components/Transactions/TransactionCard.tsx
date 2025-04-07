@@ -44,7 +44,14 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
           : `From ${transaction.adopter.name}`}
       </Text>
       <View style={styles.contentWrapper}>
-        <Image source={{ uri: imageUrl }} style={styles.image} />
+        <Image
+          source={
+            transaction.transactionType.toLowerCase() === "adoption"
+              ? require("@/assets/img/pets.jpg")
+              : require("@/assets/img/services.jpg")
+          }
+          style={styles.image}
+        />
         <Text style={styles.itemName}>{itemName}</Text>
       </View>
       <Text style={styles.price}>{`Rp ${formattedPrice(

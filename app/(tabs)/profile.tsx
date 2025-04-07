@@ -20,6 +20,18 @@ export default function ProfileScreen() {
     router.push("/auth/register");
   };
 
+  const handleTransactions = () => {
+    if (loggedInUser?.role?.name.toLowerCase() === "adopter") {
+      router.push("/transactions");
+    }
+    // else if (loggedInUser?.role?.name.toLowerCase() === "owner") {
+    //   router.push("/adoption-transaction-request");
+    // }
+    // else {
+    //   router.push("/service-transaction-request");
+    // }
+  };
+
   const handleLogout = () => {
     logoutUser();
     router.push("/");
@@ -43,22 +55,29 @@ export default function ProfileScreen() {
       <ThemedText>Profile Page.</ThemedText>
 
       {/* Custom Login and Register Buttons */}
-      <ThemedView style={styles.buttonContainer}>
-        {isLoggedIn ? (
+      {isLoggedIn ? (
+        <ThemedView style={styles.buttonFlexColContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleTransactions}>
+            <Text style={styles.buttonText}>
+              {loggedInUser?.role?.name.toLowerCase() === "adopter"
+                ? "View Transactions"
+                : "View Transaction Request"}
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleLogout}>
             <Text style={styles.buttonText}>Logout</Text>
           </TouchableOpacity>
-        ) : (
-          <>
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-              <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Register</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </ThemedView>
+        </ThemedView>
+      ) : (
+        <ThemedView style={styles.buttonFlexRowContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
+            <Text style={styles.buttonText}>Register</Text>
+          </TouchableOpacity>
+        </ThemedView>
+      )}
     </ParallaxScrollView>
   );
 }
@@ -74,7 +93,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
-  buttonContainer: {
+  buttonFlexColContainer: {
+    marginTop: 20,
+    flexDirection: "column",
+    gap: 10,
+  },
+  buttonFlexRowContainer: {
     marginTop: 20,
     flexDirection: "row",
     gap: 10,
