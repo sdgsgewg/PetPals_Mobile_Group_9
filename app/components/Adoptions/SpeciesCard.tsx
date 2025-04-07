@@ -2,13 +2,14 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ISpecies } from "@/app/interface/pet/ISpecies";
-
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/app/Navigation";
 interface SpeciesCardProps {
   species: ISpecies;
 }
-
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "AdoptionList">;
 const SpeciesCard: React.FC<SpeciesCardProps> = ({ species }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
   return (
     <TouchableOpacity

@@ -10,6 +10,8 @@ import styles from "./styles";
 import { useUsers } from "@/app/context/users/UsersContext";
 import { usePets } from "@/app/context/pets/PetsContext";
 import { useServices } from "@/app/context/services/ServicesContext";
+import { IPet } from "@/app/interface/pet/IPet";
+import { IService } from "@/app/interface/service/IService";
 
 interface ItemDetailCardProps {
   itemType: string;
@@ -52,20 +54,21 @@ const ItemDetailCard: React.FC<ItemDetailCardProps> = ({
       <Text style={styles.title}>{data?.name}</Text>
 
       {isPet ? (
-        <>
-          <Text style={styles.text}>Species: {data?.species?.name}</Text>
-          <Text style={styles.text}>Breed: {data?.breed}</Text>
-          <Text style={styles.text}>Age: {data?.age} years</Text>
-          <Text style={styles.text}>Gender: {data?.gender}</Text>
-          <Text style={styles.text}>Status: {status}</Text>
-        </>
-      ) : (
-        <>
-          <Text style={styles.text}>Category: {data?.category?.name}</Text>
-          <Text style={styles.text}>Address: {data?.address}</Text>
-          <Text style={styles.text}>City: {data?.city}</Text>
-        </>
-      )}
+  <>
+    <Text style={styles.text}>Species: {(data as IPet)?.species?.name}</Text>
+    <Text style={styles.text}>Breed: {(data as IPet)?.breed}</Text>
+    <Text style={styles.text}>Age: {(data as IPet)?.age} years</Text>
+    <Text style={styles.text}>Gender: {(data as IPet)?.gender}</Text>
+    <Text style={styles.text}>Status: {status}</Text>
+  </>
+) : (
+  <>
+    <Text style={styles.text}>Category: {(data as IService)?.category?.name}</Text>
+    <Text style={styles.text}>Address: {(data as IService)?.address}</Text>
+    <Text style={styles.text}>City: {(data as IService)?.city}</Text>
+  </>
+)}
+
 
       <Text style={styles.price}>Price: Rp {price}</Text>
 

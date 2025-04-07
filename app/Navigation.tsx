@@ -8,6 +8,7 @@ export type RootStackParamList = {
   Login: undefined;
   PetsList: undefined;
   PetDetail: { slug: string };
+  AdoptionList:{slug:string};
 };
 
 const Stack = createStackNavigator<RootStackParamList>();

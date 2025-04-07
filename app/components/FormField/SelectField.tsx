@@ -9,7 +9,7 @@ interface SelectFieldProps {
   label: string;
   name: string;
   value: number;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange: (value: number) => void;
   options: IRole[] | ISpecies[] | IServiceCategory[];
   error?: string;
 }
@@ -26,31 +26,27 @@ const SelectField: React.FC<SelectFieldProps> = ({
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={value}
-          onValueChange={onChange}
-          style={styles.picker}
-        >
+      <Picker
+  selectedValue={value}
+  onValueChange={(itemValue) => onChange(itemValue as number)}
+  style={styles.picker}
+>
+
           <Picker.Item label={`Select a ${label}`} value={0} />
-          {options.map((option) => (
-            <Picker.Item
-              key={
-                label === "Role"
-                  ? option.roleId
-                  : label === "Species"
-                  ? option.speciesId
-                  : option.categoryId
-              }
-              label={option.name}
-              value={
-                label === "Role"
-                  ? option.roleId
-                  : label === "Species"
-                  ? option.speciesId
-                  : option.categoryId
-              }
-            />
-          ))}
+          {options.map((option) => {
+  let id: number = 0;
+
+  if ("roleId" in option) {
+    id = option.roleId;
+  } else if ("speciesId" in option) {
+    id = option.speciesId;
+  } else if ("categoryId" in option) {
+    id = option.categoryId;
+  }
+
+  return <Picker.Item key={id} label={option.name} value={id} />;
+})}
+
         </Picker>
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
