@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  Button,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
-import { useRoute, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../Navigation";
-import { RouteProp } from "@react-navigation/native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { usePets } from "../context/pets/PetsContext"; // Sesuaikan path sesuai kebutuhan
 import { useAdoptions } from "../context/adoptions/AdoptionsContext"; // Sesuaikan path sesuai kebutuhan
 import { useUsers } from "../context/users/UsersContext"; // Sesuaikan path sesuai kebutuhan
@@ -44,7 +34,8 @@ const PetDetail = () => {
 
   useEffect(() => {
     if (pet) {
-      setImageUrl(getImageUrlByBreed(pet.species?.name, pet.breed));
+      // setImageUrl(getImageUrlByBreed(pet.species?.name, pet.breed));
+      setImageUrl("@/assets/img/pets.jpg");
       setPrice(pet.price?.toLocaleString("id-ID") || "0");
       setStatus(getStatus());
     }
@@ -66,7 +57,6 @@ const PetDetail = () => {
 
     adoptPet(loggedInUser.userId, pet.owner.userId, pet.petId);
     setIsAdopted(true);
-    // Alert.alert("Pet Adoption", "Pet has been reserved successfully.");
   };
 
   const getStatus = () => {
@@ -96,29 +86,40 @@ const PetDetail = () => {
   }
 
   return (
-    <NormalContent>
-      <View style={{ margin: "auto", gap: 6 }}>
-        {/* Pet Information */}
-        <ItemDetailCard
-          itemType="pet"
-          imageUrl={imageUrl}
-          status={status}
-          price={price}
-          isAdopted={isAdopted}
-          onClick={handleAdoption}
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <NormalContent>
+        <View style={styles.container}>
+          {/* Pet Information */}
+          <ItemDetailCard
+            itemType="pet"
+            imageUrl={imageUrl}
+            status={status}
+            price={price}
+            isAdopted={isAdopted}
+            onClick={handleAdoption}
+          />
+
+          {isLoggedIn &&
+            loggedInUser?.role?.name?.toLowerCase() === "adopter" && (
+              <ContactPersonCard itemType="pet" data={pet?.owner} />
+            )}
+        </View>
+
+        <MessageModal
+          title="Pet Adoption"
+          message="Pet has been reserved successfully."
         />
-
-        {loggedInUser?.role?.name?.toLowerCase() === "adopter" && (
-          <ContactPersonCard itemType="pet" data={pet?.owner} />
-        )}
-      </View>
-
-      <MessageModal
-        title="Pet Adoption"
-        message="Pet has been reserved successfully."
-      />
-    </NormalContent>
+      </NormalContent>
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width: "80%",
+    padding: 16,
+    marginHorizontal: "auto",
+  },
+});
 
 export default PetDetail;

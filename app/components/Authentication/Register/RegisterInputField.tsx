@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { useUsers } from "@/app/context/users/UsersContext";
-import InputField from "../InputField";
-import SelectField from "../SelectField";
+import InputField from "../../FormField/InputField";
+import SelectField from "../../FormField/SelectField";
 
 const RegisterInputField = () => {
   const {

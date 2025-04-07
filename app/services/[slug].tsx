@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, Button, Modal, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Button,
+  Modal,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useGlobal } from "@/app/context/GlobalContext";
 import { useServices } from "@/app/context/services/ServicesContext";
@@ -16,7 +24,7 @@ const ServiceDetail = () => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const router = useRouter();
 
-  const { getImageUrlByServiceCategory } = useGlobal();
+  const { getImageUrlByServiceCategory, formattedPrice } = useGlobal();
   const { isLoggedIn, loggedInUser } = useUsers();
   const { service, fetchServiceDetail, loading, error } = useServices();
 
@@ -35,7 +43,7 @@ const ServiceDetail = () => {
   useEffect(() => {
     if (service) {
       setImageUrl(getImageUrlByServiceCategory(service?.category?.name));
-      setPrice(service.price?.toLocaleString("id-ID") || "0");
+      setPrice(formattedPrice(service.price));
     }
   }, [service]);
 
@@ -47,14 +55,14 @@ const ServiceDetail = () => {
       return;
     }
 
-    setIsBookServiceModalOpen(true);
+    handleOpenBookServiceModal();
   };
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <NormalContent>
         <Loading />
-      </View>
+      </NormalContent>
     );
   }
 
@@ -70,36 +78,44 @@ const ServiceDetail = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <ItemDetailCard
-        itemType="service"
-        imageUrl={imageUrl}
-        price={price}
-        onClick={handleBooking}
-      />
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <NormalContent>
+        <View style={styles.container}>
+          <ItemDetailCard
+            itemType="service"
+            imageUrl={imageUrl}
+            price={price}
+            onClick={handleBooking}
+          />
 
-      {loggedInUser.role.name.toLowerCase() === "adopter" && (
-        <ContactPersonCard itemType="service" data={service?.provider} />
-      )}
+          {isLoggedIn && loggedInUser.role.name.toLowerCase() === "adopter" && (
+            <ContactPersonCard itemType="service" data={service?.provider} />
+          )}
 
-      {loggedInUser.role.name.toLowerCase() === "adopter" && (
-        <BookServiceModal
-          title="Book Service"
-          message="Please input the booking date"
-          isModalOpen={isBookServiceModalOpen}
-          onClose={() => setIsBookServiceModalOpen(false)}
-        />
-      )}
+          {isLoggedIn && loggedInUser.role.name.toLowerCase() === "adopter" && (
+            <BookServiceModal
+              title="Book Service"
+              message="Please input the booking date"
+              isModalOpen={isBookServiceModalOpen}
+              onClose={() => setIsBookServiceModalOpen(false)}
+            />
+          )}
 
-      <MessageModal title="Book Service" message="Service has been booked" />
-    </View>
+          <MessageModal
+            title="Book Service"
+            message="Service has been booked"
+          />
+        </View>
+      </NormalContent>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: "80%",
     padding: 16,
+    marginHorizontal: "auto",
   },
 });
 

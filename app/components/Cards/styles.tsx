@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     shadowOpacity: 0.1,
+    marginTop: 10,
     marginBottom: 10,
-    alignItems: "center",
   },
   image: {
     width: "100%",
@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+    marginTop: 10,
     marginBottom: 5,
   },
   text: {
@@ -48,20 +49,40 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#4F46E5",
+    width: "50%",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 20,
     flexDirection: "row",
     justifyContent: "center",
+    cursor: "pointer",
+  },
+  adoptedButton: {
+    backgroundColor: "#22c55e",
+    width: "50%",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  disabledButton: {
+    backgroundColor: "gray",
+    width: "50%",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    cursor: "not-allowed",
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     marginLeft: 5,
-  },
-  disabledButton: {
-    backgroundColor: "gray",
   },
 });
 
