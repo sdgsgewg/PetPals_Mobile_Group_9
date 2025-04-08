@@ -7,4 +7,7 @@ export interface IUserRegister {
     city: string;
     roleId: number;
   }
+
+
+
   

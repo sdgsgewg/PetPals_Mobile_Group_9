@@ -1,4 +1,4 @@
-import { StyleSheet, Platform, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, TouchableOpacity, Text } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
 import { ExternalLink } from "@/components/ExternalLink";
@@ -11,8 +11,10 @@ import { useUsers } from "../context/users/UsersContext";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const userContext = useUsers();
 
-  const { isLoggedIn, loggedInUser } = useUsers();
+  const isLoggedIn = userContext?.isLoggedIn ?? false;
+  const loggedInUser = userContext?.loggedInUser;
 
   const handlePets = () => {
     router.push("/adoptions");
@@ -38,7 +40,7 @@ export default function HomeScreen() {
         <ThemedText type="title">Home</ThemedText>
       </ThemedView>
       {isLoggedIn ? (
-        <ThemedText>{`Welcome back, ${loggedInUser.name}`}</ThemedText>
+        <ThemedText>{`Welcome back, ${loggedInUser?.name ?? "User"}`}</ThemedText>
       ) : (
         <ThemedText>Home Page.</ThemedText>
       )}
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#fff", // White text color
+    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },

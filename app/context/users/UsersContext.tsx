@@ -7,6 +7,7 @@ import {
   useEffect,
   useReducer,
 } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/lib/apiClient";
 import { IUser } from "@/app/interface/user/IUser";
 import { IRole } from "@/app/interface/user/IRole";
@@ -39,7 +40,6 @@ const UsersContext = createContext<UsersContextType | undefined>(undefined);
 
 export function UsersProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(UsersReducer, initialState);
-
   const router = useRouter();
 
   const fetchRoles = async () => {
@@ -59,14 +59,12 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           payload: response.data,
         });
       } else {
-        console.error("Invalid API response format:", response.data);
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: response?.data?.message || "Registration failed",
         });
       }
     } catch (error) {
-      console.error("Error fetching user roles:", error);
       dispatch({
         type: GlobalActionType.SET_ERROR,
         payload: "Fetch Role failed",
@@ -85,11 +83,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
 
   const registerUser = async () => {
     dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
-
-    // Reset error messages sebelum mengirim request
-    dispatch({
-      type: GlobalActionType.RESET_REGISTER_ERROR_MESSAGES,
-    });
+    dispatch({ type: GlobalActionType.RESET_REGISTER_ERROR_MESSAGES });
 
     try {
       const response = await api.post("/register-petpals", state.userRegister);
@@ -97,16 +91,9 @@ export function UsersProvider({ children }: { children: ReactNode }) {
       if (!response.data.errors) {
         alert("Registration successful");
 
-        // Reset state user yang ingin di-register
-        dispatch({
-          type: GlobalActionType.RESET_USER_REGISTER,
-        });
-
-        // Redirect ke halaman login
+        dispatch({ type: GlobalActionType.RESET_USER_REGISTER });
         router.push("/auth/login");
       } else {
-        console.error("Invalid API response format:", response.data);
-
         if (response.data.errors) {
           const errors = response.data.errors.reduce(
             (
@@ -131,10 +118,8 @@ export function UsersProvider({ children }: { children: ReactNode }) {
         });
       }
     } catch (error: any) {
-      console.error("Error register user:", error?.response?.data);
-
       if (error?.response?.data?.errors) {
-        const errors = error?.response?.data?.errors?.reduce(
+        const errors = error.response.data.errors.reduce(
           (
             acc: Record<string, string>,
             err: { propertyName: string; errorMessage: string }
@@ -169,6 +154,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
 
   const loginUser = async () => {
     dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+
     try {
       const response = await api.post("/login-petpals", state.userLogin);
 
@@ -178,28 +164,23 @@ export function UsersProvider({ children }: { children: ReactNode }) {
         const token = response.data.token;
         const userData = response.data.user;
 
-        // Simpan token dan user di session storage
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("loggedInUser", JSON.stringify(userData));
+        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.setItem("loggedInUser", JSON.stringify(userData));
 
         dispatch({
           type: GlobalActionType.LOGIN_USER,
-          payload: response.data.user,
+          payload: userData,
         });
 
-        dispatch({
-          type: GlobalActionType.RESET_USER_LOGIN,
-        });
+        dispatch({ type: GlobalActionType.RESET_USER_LOGIN });
 
         dispatch({
           type: GlobalActionType.SET_LOGGED_IN,
           payload: true,
         });
 
-        // Redirect ke halaman home
         router.push("/");
       } else {
-        console.error("Invalid API response format:", response.data);
         alert("Login Failed");
         dispatch({
           type: GlobalActionType.SET_ERROR,
@@ -218,15 +199,14 @@ export function UsersProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logoutUser = () => {
+  const logoutUser = async () => {
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("loggedInUser");
+
     dispatch({
       type: GlobalActionType.SET_LOGGED_IN,
       payload: false,
     });
-
-    // Hapus token dan user dari session storage
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("loggedInUser");
 
     dispatch({
       type: GlobalActionType.LOGOUT_USER,
@@ -234,17 +214,21 @@ export function UsersProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("loggedInUser");
-    if (storedUser) {
-      dispatch({
-        type: GlobalActionType.LOGIN_USER,
-        payload: JSON.parse(storedUser),
-      });
-      dispatch({
-        type: GlobalActionType.SET_LOGGED_IN,
-        payload: true,
-      });
-    }
+    const restoreUser = async () => {
+      const storedUser = await AsyncStorage.getItem("loggedInUser");
+      if (storedUser) {
+        dispatch({
+          type: GlobalActionType.LOGIN_USER,
+          payload: JSON.parse(storedUser),
+        });
+        dispatch({
+          type: GlobalActionType.SET_LOGGED_IN,
+          payload: true,
+        });
+      }
+    };
+
+    restoreUser();
   }, []);
 
   return (

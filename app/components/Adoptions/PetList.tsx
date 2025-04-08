@@ -1,5 +1,11 @@
 import React from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  useWindowDimensions,
+  Platform,
+} from "react-native";
 import PetCard from "./PetCard";
 import { IPet } from "@/app/interface/pet/IPet";
 import { usePets } from "@/app/context/pets/PetsContext";
@@ -12,6 +18,8 @@ interface PetListProps {
 
 const PetList: React.FC<PetListProps> = ({ filteredPets }) => {
   const { loading } = usePets();
+  const { width } = useWindowDimensions();
+  const isSmallScreen = width < 375;
 
   if (loading) return <Loading />;
 
@@ -22,12 +30,21 @@ const PetList: React.FC<PetListProps> = ({ filteredPets }) => {
           data={filteredPets}
           keyExtractor={(item) => item.slug}
           renderItem={({ item }) => (
-            <View style={styles.cardWrapper}>
+            <View
+              style={[
+                styles.cardWrapper,
+                {
+                  marginRight: isSmallScreen ? 0 : 8,
+                },
+              ]}
+            >
               <PetCard pet={item} />
             </View>
           )}
-          numColumns={2}
-          columnWrapperStyle={styles.row}
+          numColumns={isSmallScreen ? 1 : 2}
+          columnWrapperStyle={
+            isSmallScreen ? undefined : styles.row
+          }
           contentContainerStyle={styles.contentContainer}
         />
       ) : (
@@ -54,7 +71,7 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     flex: 1,
-    marginRight: 8,
+    marginBottom: 16,
   },
 });
 

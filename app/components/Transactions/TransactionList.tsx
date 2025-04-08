@@ -4,6 +4,7 @@ import React from "react";
 import { FlatList, View, StyleSheet } from "react-native";
 import TransactionCard from "./TransactionCard";
 import ItemNotFound from "../ItemNotFound";
+import { ITransaction } from "@/app/interface/transaction/ITransaction";
 
 interface TransactionListProps {
   transactionType: string; // history | adoptionReq | serviceReq
@@ -14,8 +15,8 @@ const TransactionList: React.FC<TransactionListProps> = ({
 }) => {
   const { transactions, loading } = useTransactions();
 
-  const transactionList =
-    transactionType === "history" ? transactions : transactions;
+  // Assuming the transactions can be of types ITransaction, IAdoptionTransaction, or IServiceTransaction
+  const transactionList = transactionType === "history" ? transactions : transactions;
 
   return (
     <View style={styles.container}>
@@ -23,7 +24,8 @@ const TransactionList: React.FC<TransactionListProps> = ({
         <Loading />
       ) : transactions.length > 0 ? (
         <FlatList
-          data={transactionList}
+          // Casting the transactionList to ITransaction[]
+          data={transactionList as ITransaction[]}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
             <TransactionCard

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image, Text, StyleSheet } from "react-native";
+import { View, Image, Text, StyleSheet, Dimensions } from "react-native";
 
 interface ItemNotFoundProps {
   image_url: any;
@@ -7,18 +7,23 @@ interface ItemNotFoundProps {
   message: string;
 }
 
+const { width } = Dimensions.get("window"); // Get the screen width
+
 const ItemNotFound: React.FC<ItemNotFoundProps> = ({
   image_url,
   size,
   message,
 }) => {
+  // Dynamically adjust font size based on screen width
+  const dynamicFontSize = width > 400 ? 24 : 18; // Adjust font size based on screen width
+
   return (
     <View style={styles.container}>
       <Image
         source={image_url}
         style={{ width: size, height: size, resizeMode: "contain" }}
       />
-      <Text style={styles.message}>{message}</Text>
+      <Text style={[styles.message, { fontSize: dynamicFontSize }]}>{message}</Text>
     </View>
   );
 };
@@ -31,7 +36,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   message: {
-    fontSize: 24,
     fontWeight: "bold",
     color: "black",
     textAlign: "center",

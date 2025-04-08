@@ -1,9 +1,12 @@
-import React, { useState } from "react";
-import { View, Text, ImageBackground, StyleSheet } from "react-native";
+import React from "react";
+import { View, Text, ImageBackground, StyleSheet, Dimensions } from "react-native";
 import SearchBox from "../SearchFilter/SearchBox";
 import FilterBox from "../SearchFilter/FilterBox";
 import SearchFilterBox from "../SearchFilter/SearchFilterBox";
 import { useServices } from "@/app/context/services/ServicesContext";
+
+// Get device width and height for responsive design
+const { width, height } = Dimensions.get("window");
 
 const ServiceHero = () => {
   const { filters } = useServices();
@@ -36,7 +39,7 @@ const ServiceHero = () => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: "40%",
+    height: height * 0.4, // Responsive height based on device size
   },
   imageBackground: {
     flex: 1,
@@ -54,10 +57,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "90%",
     alignItems: "center",
+    paddingHorizontal: 16, // Add padding for smaller screens
   },
   title: {
     width: "100%",
-    fontSize: 32,
+    fontSize: width < 350 ? 24 : 32, // Responsive font size based on screen width
     fontWeight: "bold",
     color: "white",
     marginBottom: 16,

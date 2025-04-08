@@ -1,4 +1,5 @@
-import { StyleSheet, Platform, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, TouchableOpacity, Text, useWindowDimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
@@ -9,8 +10,12 @@ import { useUsers } from "../context/users/UsersContext";
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const userContext = useUsers();
+  const { width } = useWindowDimensions();
 
-  const { isLoggedIn, loggedInUser, logoutUser } = useUsers();
+  const isLoggedIn = userContext?.isLoggedIn ?? false;
+  const loggedInUser = userContext?.loggedInUser;
+  const logoutUser = userContext?.logoutUser ?? (() => {});
 
   const handleLogin = () => {
     router.push("/auth/login");
@@ -21,15 +26,11 @@ export default function ProfileScreen() {
   };
 
   const handleTransactions = () => {
-    if (loggedInUser?.role?.name.toLowerCase() === "adopter") {
+    const role = loggedInUser?.role?.name?.toLowerCase();
+    if (role === "adopter") {
       router.push("/transactions");
     }
-    // else if (loggedInUser?.role?.name.toLowerCase() === "owner") {
-    //   router.push("/adoption-transaction-request");
-    // }
-    // else {
-    //   router.push("/service-transaction-request");
-    // }
+    // Future support for owner and provider roles
   };
 
   const handleLogout = () => {
@@ -37,52 +38,70 @@ export default function ProfileScreen() {
     router.push("/");
   };
 
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Profile</ThemedText>
-      </ThemedView>
-      <ThemedText>Profile Page.</ThemedText>
+  const isSmallScreen = width < 400;
 
-      {/* Custom Login and Register Buttons */}
-      {isLoggedIn ? (
-        <ThemedView style={styles.buttonFlexColContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleTransactions}>
-            <Text style={styles.buttonText}>
-              {loggedInUser?.role?.name.toLowerCase() === "adopter"
-                ? "View Transactions"
-                : "View Transaction Request"}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleLogout}>
-            <Text style={styles.buttonText}>Logout</Text>
-          </TouchableOpacity>
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+        headerImage={
+          <IconSymbol
+            size={310}
+            color="#808080"
+            name="chevron.left.forwardslash.chevron.right"
+            style={styles.headerImage}
+          />
+        }
+      >
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">Profile</ThemedText>
         </ThemedView>
-      ) : (
-        <ThemedView style={styles.buttonFlexRowContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
-        </ThemedView>
-      )}
-    </ParallaxScrollView>
+
+        <ThemedText style={styles.textInfo}>Welcome to your profile page.</ThemedText>
+
+        {isLoggedIn ? (
+          <ThemedView
+            style={[
+              styles.buttonContainer,
+              { flexDirection: isSmallScreen ? "column" : "row" },
+            ]}
+          >
+            <TouchableOpacity style={styles.button} onPress={handleTransactions}>
+              <Text style={styles.buttonText}>
+                {loggedInUser?.role?.name?.toLowerCase() === "adopter"
+                  ? "View Transactions"
+                  : "View Transaction Request"}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleLogout}>
+              <Text style={styles.buttonText}>Logout</Text>
+            </TouchableOpacity>
+          </ThemedView>
+        ) : (
+          <ThemedView
+            style={[
+              styles.buttonContainer,
+              { flexDirection: isSmallScreen ? "column" : "row" },
+            ]}
+          >
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleRegister}>
+              <Text style={styles.buttonText}>Register</Text>
+            </TouchableOpacity>
+          </ThemedView>
+        )}
+      </ParallaxScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   headerImage: {
     color: "#808080",
     bottom: -90,
@@ -92,32 +111,31 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
+    marginBottom: 10,
   },
-  buttonFlexColContainer: {
-    marginTop: 20,
-    flexDirection: "column",
-    gap: 10,
+  textInfo: {
+    marginBottom: 20,
+    fontSize: 16,
   },
-  buttonFlexRowContainer: {
+  buttonContainer: {
     marginTop: 20,
-    flexDirection: "row",
-    gap: 10,
+    gap: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
   button: {
     backgroundColor: "#1E90FF",
     borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    shadowColor: "#000", // Shadow for iOS
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5, // Shadow for Android
-    justifyContent: "center",
-    alignItems: "center",
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   buttonText: {
-    color: "#fff", // White text color
+    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },

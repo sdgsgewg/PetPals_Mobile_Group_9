@@ -10,8 +10,13 @@ import { useForums } from "@/app/context/forums/ForumsContext";
 import Loading from "@/app/loading";
 
 const PostFilter = () => {
-  const { forumCategories, fetchForumCategories, setForumCategoryId, loading } =
-    useForums();
+  const {
+    forumCategories,
+    fetchForumCategories,
+    setForumCategoryId,
+    forumCategoryId,
+    loading,
+  } = useForums();
 
   useEffect(() => {
     fetchForumCategories();
@@ -33,20 +38,42 @@ const PostFilter = () => {
           horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.container}
+          contentContainerStyle={{ paddingRight: 20 }}
         >
           <TouchableOpacity
-            style={styles.button}
+            style={[
+              styles.button,
+              forumCategoryId === 0 && styles.selectedButton,
+            ]}
             onPress={() => setForumCategoryId(0)}
           >
-            <Text style={styles.buttonText}>All</Text>
+            <Text
+              style={[
+                styles.buttonText,
+                forumCategoryId === 0 && styles.selectedButtonText,
+              ]}
+            >
+              All
+            </Text>
           </TouchableOpacity>
+
           {forumCategories.map((category) => (
             <TouchableOpacity
               key={category.forumCategoryId}
-              style={styles.button}
+              style={[
+                styles.button,
+                forumCategoryId === category.forumCategoryId &&
+                  styles.selectedButton,
+              ]}
               onPress={() => setForumCategoryId(category.forumCategoryId)}
             >
-              <Text style={styles.buttonText}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  forumCategoryId === category.forumCategoryId &&
+                    styles.selectedButtonText,
+                ]}
+              >
                 {getCategoryName(category.name)}
               </Text>
             </TouchableOpacity>
@@ -70,10 +97,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 10,
   },
+  selectedButton: {
+    backgroundColor: "#2563EB", // blue-600
+  },
   buttonText: {
     color: "#111827", // gray-900
     fontSize: 14,
     fontWeight: "600",
+  },
+  selectedButtonText: {
+    color: "#FFFFFF", // white
   },
 });
 

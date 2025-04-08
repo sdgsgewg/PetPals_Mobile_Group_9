@@ -2,13 +2,9 @@ import React from "react";
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
   Linking,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import { IUser } from "@/app/interface/user/IUser";
 import styles from "./styles";
@@ -23,6 +19,14 @@ const ContactPersonCard: React.FC<ContactPersonCardProps> = ({
   data,
 }) => {
   const isPet = itemType === "pet";
+
+  const handleWhatsApp = () => {
+    const phoneNumber = data?.phone?.replace(/\D/g, "");
+    if (phoneNumber) {
+      Linking.openURL(`https://wa.me/${phoneNumber}`);
+    }
+  };
+
   return (
     <View style={styles.contactCard}>
       <Text style={styles.title}>{data?.name}</Text>
@@ -33,14 +37,11 @@ const ContactPersonCard: React.FC<ContactPersonCardProps> = ({
           <Text style={styles.text}>City: {data?.city}</Text>
         </>
       )}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => Linking.openURL(`https://wa.me/${data?.phone}`)}
-      >
+      <TouchableOpacity style={styles.button} onPress={handleWhatsApp}>
         <FontAwesome name="whatsapp" size={24} color="white" />
-        <Text style={styles.buttonText}>{`Contact ${
-          isPet ? "Owner" : "Provider"
-        }`}</Text>
+        <Text style={styles.buttonText}>
+          Contact {isPet ? "Owner" : "Provider"}
+        </Text>
       </TouchableOpacity>
     </View>
   );

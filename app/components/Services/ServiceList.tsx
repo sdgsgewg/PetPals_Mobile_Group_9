@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, Image, StyleSheet } from "react-native";
+import { View, FlatList, StyleSheet, Dimensions } from "react-native";
 import { IService } from "@/app/interface/service/IService";
 import ServiceCard from "./ServiceCard";
 import { useServices } from "@/app/context/services/ServicesContext";
@@ -12,23 +12,27 @@ interface ServiceListProps {
 
 const ServiceList: React.FC<ServiceListProps> = ({ filteredServices }) => {
   const { loading } = useServices();
+  const { width } = Dimensions.get("window");
 
   if (loading) {
     return <Loading />;
   }
+
+  // Determine number of columns based on screen width
+  const numColumns = width < 350 ? 1 : 2; // Use 1 column on smaller screens, 2 on larger screens
 
   return (
     <View style={styles.container}>
       {filteredServices.length > 0 ? (
         <FlatList
           data={filteredServices}
-          keyExtractor={(item) => item.slug}
+          keyExtractor={(item) => item.slug}  // Ensure 'slug' is unique, or use another unique identifier
           renderItem={({ item }) => (
             <View style={styles.cardWrapper}>
               <ServiceCard service={item} />
             </View>
           )}
-          numColumns={2}
+          numColumns={numColumns}  // Dynamically set number of columns based on screen width
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.contentContainer}
         />

@@ -3,7 +3,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
 } from "react-native";
 import styles from "./styles";
@@ -36,7 +35,6 @@ const ItemDetailCard: React.FC<ItemDetailCardProps> = ({
 
   const isPet = itemType === "pet";
   const data = isPet ? petContext.pet : serviceContext.service;
-
   const isAdopter = loggedInUser?.role?.name?.toLowerCase() === "adopter";
 
   return (
@@ -54,25 +52,23 @@ const ItemDetailCard: React.FC<ItemDetailCardProps> = ({
       <Text style={styles.title}>{data?.name}</Text>
 
       {isPet ? (
-  <>
-    <Text style={styles.text}>Species: {(data as IPet)?.species?.name}</Text>
-    <Text style={styles.text}>Breed: {(data as IPet)?.breed}</Text>
-    <Text style={styles.text}>Age: {(data as IPet)?.age} years</Text>
-    <Text style={styles.text}>Gender: {(data as IPet)?.gender}</Text>
-    <Text style={styles.text}>Status: {status}</Text>
-  </>
-) : (
-  <>
-    <Text style={styles.text}>Category: {(data as IService)?.category?.name}</Text>
-    <Text style={styles.text}>Address: {(data as IService)?.address}</Text>
-    <Text style={styles.text}>City: {(data as IService)?.city}</Text>
-  </>
-)}
-
+        <>
+          <Text style={styles.text}>Species: {(data as IPet)?.species?.name}</Text>
+          <Text style={styles.text}>Breed: {(data as IPet)?.breed}</Text>
+          <Text style={styles.text}>Age: {(data as IPet)?.age} years</Text>
+          <Text style={styles.text}>Gender: {(data as IPet)?.gender}</Text>
+          <Text style={styles.text}>Status: {status}</Text>
+        </>
+      ) : (
+        <>
+          <Text style={styles.text}>Category: {(data as IService)?.category?.name}</Text>
+          <Text style={styles.text}>Address: {(data as IService)?.address}</Text>
+          <Text style={styles.text}>City: {(data as IService)?.city}</Text>
+        </>
+      )}
 
       <Text style={styles.price}>Price: Rp {price}</Text>
 
-      {/* Action Button */}
       {isAdopter && (
         <TouchableOpacity
           style={

@@ -11,10 +11,10 @@ import { Eye, EyeOff } from "lucide-react-native";
 interface InputFieldProps {
   label: string;
   name: string;
-  type?: string;
+  type?: "text" | "password"; // restrict input types for clarity
   placeholder: string;
   value: string | number;
-  onChange: (e: string) => void;
+  onChange: (value: string) => void;
   error?: string;
 }
 
@@ -29,16 +29,21 @@ const InputField: React.FC<InputFieldProps> = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleChange = (text: string) => {
+    onChange(text);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, error && styles.inputContainerError]}>
         <TextInput
-          secureTextEntry={type === "password" && !showPassword}
           placeholder={placeholder}
-          style={[styles.input, error && styles.inputError]}
-          value={value}
-          onChangeText={onChange}
+          secureTextEntry={type === "password" && !showPassword}
+          style={styles.input}
+          value={String(value)}
+          onChangeText={handleChange}
+          autoCapitalize="none"
         />
         {type === "password" && (
           <TouchableOpacity
@@ -46,14 +51,14 @@ const InputField: React.FC<InputFieldProps> = ({
             onPress={() => setShowPassword((prev) => !prev)}
           >
             {showPassword ? (
-              <EyeOff size={22} color="#808080" />
+              <EyeOff size={20} color="#6B7280" />
             ) : (
-              <Eye size={22} color="#808080" />
+              <Eye size={20} color="#6B7280" />
             )}
           </TouchableOpacity>
         )}
       </View>
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {!!error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 };
@@ -63,29 +68,30 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    color: "#4B5563",
+    color: "#374151",
     fontWeight: "600",
+    fontSize: 14,
     marginBottom: 4,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
+    borderColor: "#D1D5DB",
     borderRadius: 8,
     paddingHorizontal: 12,
     height: 44,
-    borderColor: "#D1D5DB",
+  },
+  inputContainerError: {
+    borderColor: "#EF4444",
   },
   input: {
     flex: 1,
-    paddingVertical: 10,
     fontSize: 16,
-  },
-  inputError: {
-    borderColor: "#EF4444",
+    color: "#111827",
   },
   icon: {
-    padding: 8,
+    paddingLeft: 8,
   },
   errorText: {
     color: "#EF4444",

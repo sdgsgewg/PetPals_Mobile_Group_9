@@ -1,100 +1,61 @@
-import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  Button,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useForums } from "@/app/context/forums/ForumsContext";
-import { useUsers } from "@/app/context/users/UsersContext";
-import PostFilter from "@/app/components/Forums/PostFilter";
-import PostList from "@/app/components/Forums/PostList";
-import PageNotFound from "@/app/components/PageNotFound";
-import { useRouter } from "expo-router";
-import NormalContent from "../components/ContentTemplate/NormalContent";
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { ForumsContext } from '@/app/context/forums/ForumsContext';
+
+// Define post type (You can move this to a separate types file if preferred)
+type ForumPostType = {
+  title: string;
+  content: string;
+};
 
 const ForumScreen = () => {
-  const router = useRouter();
-  const { isLoggedIn } = useUsers();
-  const { forumCategoryId, fetchForumCategories, fetchForumPosts, error } =
-    useForums();
+  const forumContext = useContext(ForumsContext);
 
-  useEffect(() => {
-    fetchForumCategories();
-    fetchForumPosts();
-  }, []);
-
-  useEffect(() => {
-    fetchForumPosts();
-  }, [forumCategoryId]);
-
-  if (error) {
-    return (
-      <NormalContent>
-        <PageNotFound
-          image_url={require("@/assets/img/page-not-found.png")}
-          message=""
-        />
-      </NormalContent>
-    );
+  if (!forumContext) {
+    return <Text>Loading forum...</Text>;
   }
 
-  const handleCreatePost = () => {
-    isLoggedIn ? router.push("/forums/new") : router.push("/auth/login");
-  };
+  const { forumPosts } = forumContext as { forumPosts: ForumPostType[] };
+
+  const screenWidth = Dimensions.get('window').width;
 
   return (
-    <NormalContent>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Forum PetPals</Text>
-          <TouchableOpacity onPress={handleCreatePost} style={styles.button}>
-            <Text style={styles.buttonText}>Buat Postingan</Text>
-          </TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.container}>
+      {forumPosts.map((post: ForumPostType, index: number) => (
+        <View key={index} style={[styles.postCard, { width: screenWidth - 40 }]}>
+          <Text style={styles.title}>{post.title}</Text>
+          <Text style={styles.content}>{post.content}</Text>
         </View>
-
-        <PostFilter />
-        <PostList />
-      </ScrollView>
-    </NormalContent>
+      ))}
+    </ScrollView>
   );
 };
 
-export default ForumScreen;
-
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#F9FAFB",
+    padding: 20,
+    alignItems: 'center',
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
+  postCard: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 4,
+    elevation: 3,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#1F2937",
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 6,
   },
-  button: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 6,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
+  content: {
+    fontSize: 14,
+    color: '#555',
   },
 });
+
+export default ForumScreen;

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { useDebounce } from "react-use";
 
 import PetHero from "@/app/components/Adoptions/PetHero";
@@ -10,11 +10,10 @@ import NormalContent from "@/app/components/ContentTemplate/NormalContent";
 import PageNotFound from "@/app/components/PageNotFound";
 import FilterModal from "../components/modals/FilterModal";
 import { usePets } from "@/app/context/pets/PetsContext";
-import { ScrollView } from "react-native";
 
 const Adoptions = () => {
   const { pets, filters, fetchPets, error } = usePets();
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(filters.searchValue);
 
   useDebounce(
     () => {
@@ -62,7 +61,7 @@ const styles = StyleSheet.create({
     marginVertical: 40,
   },
   petListWrapper: {
-    paddingHorizontal: 16, // Equivalent to px-4
+    paddingHorizontal: 16,
   },
 });
 

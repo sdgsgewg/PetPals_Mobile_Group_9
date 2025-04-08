@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
-import { usePets } from "../context/pets/PetsContext"; // Sesuaikan path sesuai kebutuhan
-import { useAdoptions } from "../context/adoptions/AdoptionsContext"; // Sesuaikan path sesuai kebutuhan
-import { useUsers } from "../context/users/UsersContext"; // Sesuaikan path sesuai kebutuhan
-import { useGlobal } from "../context/GlobalContext"; // Sesuaikan path sesuai kebutuhan
+import { usePets } from "../context/pets/PetsContext";
+import { useAdoptions } from "../context/adoptions/AdoptionsContext";
+import { useUsers } from "../context/users/UsersContext";
+import { useGlobal } from "../context/GlobalContext";
 import NormalContent from "../components/ContentTemplate/NormalContent";
 import Loading from "../loading";
 import PageNotFound from "../components/PageNotFound";
@@ -34,7 +34,6 @@ const PetDetail = () => {
 
   useEffect(() => {
     if (pet) {
-      // setImageUrl(getImageUrlByBreed(pet.species?.name, pet.breed));
       setImageUrl("@/assets/img/pets.jpg");
       setPrice(pet.price?.toLocaleString("id-ID") || "0");
       setStatus(getStatus());
@@ -42,13 +41,13 @@ const PetDetail = () => {
   }, [pet]);
 
   useEffect(() => {
-    if (adoptions.some((adopt) => adopt.petId === pet?.petId)) {
+    if (pet && adoptions.some((adopt) => adopt.petId === pet.petId)) {
       setIsAdopted(true);
     }
   }, [adoptions, pet]);
 
   const handleAdoption = () => {
-    if (!pet || !pet.status || pet.status.toLowerCase() !== "available") return;
+    if (!pet || pet.status?.toLowerCase() !== "available") return;
 
     if (!isLoggedIn) {
       router.push("/auth/login");
@@ -61,9 +60,7 @@ const PetDetail = () => {
 
   const getStatus = () => {
     if (!pet?.status) return "Unknown";
-    return (
-      pet.status.charAt(0).toUpperCase() + pet.status.slice(1).toLowerCase()
-    );
+    return pet.status.charAt(0).toUpperCase() + pet.status.slice(1).toLowerCase();
   };
 
   if (loading) {
@@ -79,7 +76,7 @@ const PetDetail = () => {
       <NormalContent>
         <PageNotFound
           image_url={require("@/assets/img/page-not-found.png")}
-          message=""
+          message="Pet not found."
         />
       </NormalContent>
     );
@@ -89,7 +86,6 @@ const PetDetail = () => {
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <NormalContent>
         <View style={styles.container}>
-          {/* Pet Information */}
           <ItemDetailCard
             itemType="pet"
             imageUrl={imageUrl}
@@ -101,7 +97,7 @@ const PetDetail = () => {
 
           {isLoggedIn &&
             loggedInUser?.role?.name?.toLowerCase() === "adopter" && (
-              <ContactPersonCard itemType="pet" data={pet?.owner} />
+              <ContactPersonCard itemType="pet" data={pet.owner} />
             )}
         </View>
 
@@ -116,9 +112,9 @@ const PetDetail = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: "80%",
+    width: "90%",
     padding: 16,
-    marginHorizontal: "auto",
+    alignSelf: "center",
   },
 });
 

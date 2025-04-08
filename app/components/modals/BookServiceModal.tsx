@@ -10,6 +10,10 @@ import {
   TouchableOpacity,
   Alert,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 
 interface BookServiceProps {
@@ -32,8 +36,8 @@ const BookServiceModal: React.FC<BookServiceProps> = ({
   const [bookingDate, setBookingDate] = useState<string>("");
 
   const handleBooking = () => {
-    if (bookingDate === "") {
-      Alert.alert("Please select a date");
+    if (!bookingDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      Alert.alert("Invalid date", "Please enter date in YYYY-MM-DD format.");
       return;
     }
 
@@ -46,6 +50,7 @@ const BookServiceModal: React.FC<BookServiceProps> = ({
 
     onClose();
     handleOpenMessageModal();
+    setBookingDate(""); // reset input
   };
 
   return (
@@ -55,28 +60,34 @@ const BookServiceModal: React.FC<BookServiceProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.overlay}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={styles.modalContainer}
+          >
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.message}>{message}</Text>
 
-          <TextInput
-            style={styles.input}
-            value={bookingDate}
-            onChangeText={setBookingDate}
-            placeholder="YYYY-MM-DD"
-          />
+            <TextInput
+              style={styles.input}
+              value={bookingDate}
+              onChangeText={setBookingDate}
+              placeholder="YYYY-MM-DD"
+              keyboardType="numeric"
+            />
 
-          <View style={styles.buttonGroup}>
-            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.bookButton} onPress={handleBooking}>
-              <Text style={styles.bookText}>Book</Text>
-            </TouchableOpacity>
-          </View>
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+                <Text style={styles.cancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.bookButton} onPress={handleBooking}>
+                <Text style={styles.bookText}>Book</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
@@ -94,7 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     borderRadius: 12,
-    width: "80%",
+    width: "85%",
     shadowColor: "#000",
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
@@ -125,8 +136,8 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: "#ccc",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 22,
     borderRadius: 8,
   },
   cancelText: {
@@ -134,8 +145,8 @@ const styles = StyleSheet.create({
   },
   bookButton: {
     backgroundColor: "#3B82F6",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 22,
     borderRadius: 8,
   },
   bookText: {

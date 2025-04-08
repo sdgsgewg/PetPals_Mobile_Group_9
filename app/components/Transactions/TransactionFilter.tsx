@@ -5,9 +5,9 @@ import FilterButton from "./FilterButton";
 const TransactionFilter = () => {
   return (
     <View style={styles.container}>
-      <FilterButton filterType="All" />
-      <FilterButton filterType="Adoption" />
-      <FilterButton filterType="Service" />
+      <FilterButton filterType="All" isActive={false} />
+      <FilterButton filterType="Adoption" isActive={false} />
+      <FilterButton filterType="Service" isActive={false} />
     </View>
   );
 };

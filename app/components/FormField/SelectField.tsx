@@ -1,22 +1,18 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { IRole } from "@/app/interface/user/IRole";
-import { ISpecies } from "@/app/interface/pet/ISpecies";
-import { IServiceCategory } from "@/app/interface/service/IServiceCategory";
 
 interface SelectFieldProps {
   label: string;
   name: string;
-  value: number;
-  onChange: (value: number) => void;
-  options: IRole[] | ISpecies[] | IServiceCategory[];
-  error?: string;
+  value: string | number;
+  onChange: (value: string) => void;
+  options: { label: string; value: string | number }[];
+  error: string;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
   label,
-  name,
   value,
   onChange,
   options,
@@ -25,55 +21,40 @@ const SelectField: React.FC<SelectFieldProps> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <View style={styles.pickerContainer}>
       <Picker
-  selectedValue={value}
-  onValueChange={(itemValue) => onChange(itemValue as number)}
-  style={styles.picker}
->
-
-          <Picker.Item label={`Select a ${label}`} value={0} />
-          {options.map((option) => {
-  let id: number = 0;
-
-  if ("roleId" in option) {
-    id = option.roleId;
-  } else if ("speciesId" in option) {
-    id = option.speciesId;
-  } else if ("categoryId" in option) {
-    id = option.categoryId;
-  }
-
-  return <Picker.Item key={id} label={option.name} value={id} />;
-})}
-
-        </Picker>
-      </View>
-      {error && <Text style={styles.errorText}>{error}</Text>}
+        selectedValue={String(value)}
+        onValueChange={(itemValue) => onChange(itemValue)} 
+        style={styles.picker}
+      >
+        <Picker.Item label="Select an option..." value="" />
+        {options.map((option) => (
+          <Picker.Item
+            key={option.value}
+            label={option.label.toString()}
+            value={String(option.value)}
+          />
+        ))}
+      </Picker>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginVertical: 8,
   },
   label: {
-    color: "#4B5563",
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    backgroundColor: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   picker: {
-    height: 44,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
   },
-  errorText: {
-    color: "#EF4444",
+  error: {
+    color: "red",
     fontSize: 12,
     marginTop: 4,
   },

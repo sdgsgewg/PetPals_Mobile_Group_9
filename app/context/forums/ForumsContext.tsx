@@ -35,7 +35,7 @@ interface ForumsContextType {
 
 const ForumsContext = createContext<ForumsContextType | undefined>(undefined);
 
-export function ForumsProvider({ children }: { children: ReactNode }) {
+ function ForumsProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(ForumsReducer, initialState);
 
   const { handleOpenMessageModal } = useGlobal();
@@ -285,10 +285,13 @@ export function ForumsProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useForums() {
+ function useForums() {
   const context = useContext(ForumsContext);
   if (!context) {
     throw new Error("useForums must be used within a ForumsProvider");
   }
   return context;
 }
+
+export { ForumsContext, ForumsProvider, useForums };
+

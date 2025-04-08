@@ -17,13 +17,19 @@ const RegisterInputField = () => {
     fetchRoles();
   }, []);
 
+  const roleOptions = roles.map((role) => ({
+    label: role.name,
+    value: role.roleId,
+  }));
+  
+
   return (
     <View style={styles.inputContainer}>
       <InputField
         label="Name"
         name="name"
         placeholder="Full Name"
-        value={userRegister.name}
+        value={userRegister.name ?? ""}
         onChange={(text) => setUserRegister("name", text)}
         error={registerErrorMessages.Name}
       />
@@ -31,9 +37,8 @@ const RegisterInputField = () => {
       <InputField
         label="Email"
         name="email"
-        type="email"
         placeholder="Email"
-        value={userRegister.email}
+        value={userRegister.email ?? ""}
         onChange={(text) => setUserRegister("email", text)}
         error={registerErrorMessages.Email}
       />
@@ -41,9 +46,8 @@ const RegisterInputField = () => {
       <InputField
         label="Password"
         name="password"
-        type="password"
         placeholder="Password"
-        value={userRegister.password}
+        value={userRegister.password ?? ""}
         onChange={(text) => setUserRegister("password", text)}
         error={registerErrorMessages.Password}
       />
@@ -51,9 +55,8 @@ const RegisterInputField = () => {
       <InputField
         label="Phone"
         name="phone"
-        type="tel"
         placeholder="Phone Number"
-        value={userRegister.phone}
+        value={userRegister.phone ?? ""}
         onChange={(text) => setUserRegister("phone", text)}
         error={registerErrorMessages.Phone}
       />
@@ -62,7 +65,7 @@ const RegisterInputField = () => {
         label="Address"
         name="address"
         placeholder="Address"
-        value={userRegister.address}
+        value={userRegister.address ?? ""}
         onChange={(text) => setUserRegister("address", text)}
         error={registerErrorMessages.Address}
       />
@@ -71,19 +74,22 @@ const RegisterInputField = () => {
         label="City"
         name="city"
         placeholder="City"
-        value={userRegister.city}
+        value={userRegister.city ?? ""}
         onChange={(text) => setUserRegister("city", text)}
         error={registerErrorMessages.City}
       />
 
-      <SelectField
-        label="Role"
-        name="roleId"
-        value={userRegister.roleId}
-        onChange={(value) => setUserRegister("roleId", Number(value))}
-        options={roles}
-        error={registerErrorMessages.RoleId}
-      />
+<SelectField
+  label="Role"
+  name="roleId"
+  value={String(userRegister.roleId ?? "")}
+  onChange={(value) => setUserRegister("roleId", value)} // ✅ safely converted back to number
+  options={roleOptions}
+  error={String(registerErrorMessages.RoleId ?? "")}
+/>
+
+
+
     </View>
   );
 };
