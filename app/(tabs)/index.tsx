@@ -40,7 +40,9 @@ export default function HomeScreen() {
         <ThemedText type="title">Home</ThemedText>
       </ThemedView>
       {isLoggedIn ? (
-        <ThemedText>{`Welcome back, ${loggedInUser?.name ?? "User"}`}</ThemedText>
+        <ThemedText>{`Welcome back, ${
+          loggedInUser?.name ?? "User"
+        }`}</ThemedText>
       ) : (
         <ThemedText>Home Page.</ThemedText>
       )}

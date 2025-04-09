@@ -31,9 +31,9 @@ export default function Services() {
   return (
     <BigHeroContent>
       <ServiceHero />
-      <ScrollView style={styles.serviceListWrapper}>
+      <View style={styles.serviceListWrapper}>
         <ServiceList filteredServices={services} />
-      </ScrollView>
+      </View>
       <FilterModal filterType="services" />
     </BigHeroContent>
   );
@@ -42,8 +42,8 @@ export default function Services() {
 const styles = StyleSheet.create({
   serviceListWrapper: {
     flex: 1,
-    paddingLeft: 8,
-    paddingRight: 0,
+    paddingLeft: 24,
+    paddingRight: 16,
     marginVertical: 40,
   },
 });

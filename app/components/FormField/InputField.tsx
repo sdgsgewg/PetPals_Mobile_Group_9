@@ -51,7 +51,7 @@ const InputField: React.FC<InputFieldProps> = ({
           placeholder={placeholder}
           secureTextEntry={isPasswordType && !showPassword}
           keyboardType={type === "number" ? "numeric" : "default"}
-          value={String(value)}
+          value={value?.toString()}
           onChangeText={(text) => onChange(name, text)}
           style={[
             styles.input,
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     color: "#333333",
   },
   icon: {
+    color: "#EF4444",
     position: "absolute",
     right: 10,
     top: "50%",

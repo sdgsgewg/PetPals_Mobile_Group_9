@@ -12,7 +12,7 @@ interface TextareaFieldProps {
   name: string;
   placeholder: string;
   value: string;
-  onChange: (text: string) => void;
+  onChange: (name: string, value: number | string) => void;
   error?: string;
   rows?: number;
 }
@@ -34,7 +34,7 @@ const TextareaField: React.FC<TextareaFieldProps> = ({
         numberOfLines={rows}
         placeholder={placeholder}
         value={value}
-        onChangeText={onChange}
+        onChangeText={(text) => onChange(name, text)}
         style={[styles.textarea, error ? styles.errorBorder : null]}
         placeholderTextColor="#999"
       />

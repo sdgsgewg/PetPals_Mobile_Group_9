@@ -34,9 +34,9 @@ const Adoptions = () => {
   return (
     <BigHeroContent>
       <PetHero />
-      <ScrollView style={styles.petListWrapper}>
+      <View style={styles.petListWrapper}>
         <PetList filteredPets={pets} />
-      </ScrollView>
+      </View>
       <FilterModal filterType="pets" />
     </BigHeroContent>
   );
@@ -45,8 +45,8 @@ const Adoptions = () => {
 const styles = StyleSheet.create({
   petListWrapper: {
     flex: 1,
-    paddingLeft: 8,
-    paddingRight: 0,
+    paddingLeft: 24,
+    paddingRight: 16,
     marginVertical: 40,
   },
 });

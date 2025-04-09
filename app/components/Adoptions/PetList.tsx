@@ -18,7 +18,7 @@ const PetList: React.FC<PetListProps> = ({ filteredPets }) => {
   if (loading) return <Loading />;
 
   return (
-    <View style={styles.container}>
+    <>
       {filteredPets.length > 0 ? (
         <FlatList
           data={filteredPets}
@@ -48,14 +48,11 @@ const PetList: React.FC<PetListProps> = ({ filteredPets }) => {
           message="Pet Not Found"
         />
       )}
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-  },
   contentContainer: {
     paddingBottom: 100,
   },

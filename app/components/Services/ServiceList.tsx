@@ -17,11 +17,8 @@ const ServiceList: React.FC<ServiceListProps> = ({ filteredServices }) => {
 
   if (loading) return <Loading />;
 
-  // Determine number of columns based on screen width
-  const numColumns = width < 350 ? 1 : 2; // Use 1 column on smaller screens, 2 on larger screens
-
   return (
-    <View style={styles.container}>
+    <>
       {filteredServices.length > 0 ? (
         <FlatList
           data={filteredServices}
@@ -51,14 +48,11 @@ const ServiceList: React.FC<ServiceListProps> = ({ filteredServices }) => {
           message="Service Not Found"
         />
       )}
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-  },
   contentContainer: {
     paddingBottom: 100,
   },

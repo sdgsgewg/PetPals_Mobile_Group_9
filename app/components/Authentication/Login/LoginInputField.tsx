@@ -1,9 +1,10 @@
 import { useUsers } from "@/app/context/users/UsersContext";
 import React from "react";
 import { TextInput, View, Text, StyleSheet, Platform } from "react-native";
+import InputField from "../../FormField/InputField";
 
 const LoginInputField = () => {
-  const { userLogin, setUserLogin } = useUsers();
+  const { userLogin, setUserLogin, loginErrorMessages } = useUsers();
 
   const handleInputChange = (name: string, value: string) => {
     setUserLogin(name, value);
@@ -11,35 +12,25 @@ const LoginInputField = () => {
 
   return (
     <View style={styles.wrapper}>
-      {/* Email Field */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          value={userLogin.email}
-          onChangeText={(text) => handleInputChange("email", text)}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-          textContentType="emailAddress"
-        />
-      </View>
+      <InputField
+        label="Email"
+        name="email"
+        type="email"
+        placeholder="Email"
+        value={userLogin.email}
+        onChange={handleInputChange}
+        error={loginErrorMessages.Email}
+      />
 
-      {/* Password Field */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          value={userLogin.password}
-          onChangeText={(text) => handleInputChange("password", text)}
-          secureTextEntry
-          autoCapitalize="none"
-          autoComplete="password"
-          textContentType="password"
-        />
-      </View>
+      <InputField
+        label="Password"
+        name="password"
+        type="password"
+        placeholder="Password"
+        value={userLogin.password}
+        onChange={handleInputChange}
+        error={loginErrorMessages.Password}
+      />
     </View>
   );
 };

@@ -23,41 +23,45 @@ const AuthForm: React.FC<AuthFormProps> = ({ authType }) => {
   const authFunction =
     authType === "Login" ? userContext.loginUser : userContext.registerUser;
 
-    return (
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <View style={styles.formContainer}>
-            <Text style={styles.title}>{authType}</Text>
-            <View>
-              {authType === "Login" ? <LoginInputField /> : <RegisterInputField />}
-    
-              <TouchableOpacity style={styles.button} onPress={authFunction}>
-                <Text style={styles.buttonText}>{authType}</Text>
-              </TouchableOpacity>
-    
-              <Text style={styles.linkText}>
-                {authType === "Login"
-                  ? "Don't have an account?"
-                  : "Already have an account?"}{" "}
-                <Text
-                  style={styles.link}
-                  onPress={() => {
-                    authType === "Login"
-                      ? router.push("/auth/register")
-                      : router.push("/auth/login");
-                  }}
-                >
-                  {authType === "Login" ? "Register here" : "Login here"}
-                </Text>
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>{authType}</Text>
+          <View>
+            {authType === "Login" ? (
+              <LoginInputField />
+            ) : (
+              <RegisterInputField />
+            )}
+
+            <TouchableOpacity style={styles.button} onPress={authFunction}>
+              <Text style={styles.buttonText}>{authType}</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.linkText}>
+              {authType === "Login"
+                ? "Don't have an account yet?"
+                : "Already have an account?"}{" "}
+              <Text
+                style={styles.link}
+                onPress={() => {
+                  authType === "Login"
+                    ? router.push("/auth/register")
+                    : router.push("/auth/login");
+                }}
+              >
+                {authType === "Login" ? "Register here" : "Login here"}
               </Text>
-            </View>
+            </Text>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    );
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 50,
+    paddingBottom: 150,
   },
   formContainer: {
     width: "100%",

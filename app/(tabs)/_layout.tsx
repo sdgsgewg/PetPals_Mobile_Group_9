@@ -25,7 +25,7 @@ export default function Layout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="profiles"
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (

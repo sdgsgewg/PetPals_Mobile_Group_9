@@ -19,24 +19,9 @@ const Register = () => {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
-        <AuthLayout>
-          <View
-            style={[
-              styles.formContainer,
-              {
-                width: isSmallScreen ? "90%" : "70%",
-                maxWidth: 400, // prevent overly wide forms
-              },
-            ]}
-          >
-            <AuthForm authType="Register" />
-          </View>
-        </AuthLayout>
-      </ScrollView>
+      <AuthLayout>
+        <AuthForm authType="Register" />
+      </AuthLayout>
     </KeyboardAvoidingView>
   );
 };
