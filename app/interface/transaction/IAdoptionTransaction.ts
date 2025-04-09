@@ -1,5 +1,5 @@
-import { IPet } from "../pet/IPet";
-import { IUser } from "../user/IUser";
+import IPet from "../pet/IPet";
+import IUser from "../user/IUser";
 
 export enum AdoptionStatus {
   Pending = "pending",
@@ -7,8 +7,8 @@ export enum AdoptionStatus {
   Rejected = "rejected",
 }
 
-export interface IAdoptionTransaction {
-  adoptionId: number;
+interface IAdoptionTransaction {
+  transactionId: number;
   adopterId: number;
   ownerId: number;
   petId: number;
@@ -20,3 +20,5 @@ export interface IAdoptionTransaction {
   owner: IUser;
   pet: IPet;
 }
+
+export default IAdoptionTransaction;

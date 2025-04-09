@@ -1,10 +1,10 @@
 import React from "react";
-import { View, FlatList, StyleSheet, Dimensions } from "react-native";
-import { IService } from "@/app/interface/service/IService";
+import { View, FlatList, StyleSheet, useWindowDimensions } from "react-native";
+import IService from "@/app/interface/service/IService";
 import ServiceCard from "./ServiceCard";
 import { useServices } from "@/app/context/services/ServicesContext";
-import Loading from "@/app/loading";
 import ItemNotFound from "../ItemNotFound";
+import Loading from "../Loading";
 
 interface ServiceListProps {
   filteredServices: IService[];
@@ -12,11 +12,10 @@ interface ServiceListProps {
 
 const ServiceList: React.FC<ServiceListProps> = ({ filteredServices }) => {
   const { loading } = useServices();
-  const { width } = Dimensions.get("window");
+  const { width } = useWindowDimensions();
+  const isSmallScreen = width < 375;
 
-  if (loading) {
-    return <Loading />;
-  }
+  if (loading) return <Loading />;
 
   // Determine number of columns based on screen width
   const numColumns = width < 350 ? 1 : 2; // Use 1 column on smaller screens, 2 on larger screens
@@ -26,15 +25,24 @@ const ServiceList: React.FC<ServiceListProps> = ({ filteredServices }) => {
       {filteredServices.length > 0 ? (
         <FlatList
           data={filteredServices}
-          keyExtractor={(item) => item.slug}  // Ensure 'slug' is unique, or use another unique identifier
+          keyExtractor={(item) => item.slug}
           renderItem={({ item }) => (
-            <View style={styles.cardWrapper}>
+            <View
+              style={[
+                styles.cardWrapper,
+                {
+                  marginRight: isSmallScreen ? 0 : 8,
+                },
+              ]}
+            >
               <ServiceCard service={item} />
             </View>
           )}
-          numColumns={numColumns}  // Dynamically set number of columns based on screen width
-          columnWrapperStyle={styles.row}
+          numColumns={isSmallScreen ? 1 : 2}
+          columnWrapperStyle={isSmallScreen ? undefined : styles.row}
           contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
         />
       ) : (
         <ItemNotFound
@@ -52,11 +60,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   contentContainer: {
-    paddingBottom: 24,
+    paddingBottom: 100,
   },
   row: {
     justifyContent: "space-between",
     marginBottom: 16,
+    alignItems: "stretch",
   },
   cardWrapper: {
     flex: 1,

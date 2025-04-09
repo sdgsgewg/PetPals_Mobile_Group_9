@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useGlobal } from "@/app/context/GlobalContext";
-import { IPet } from "@/app/interface/pet/IPet";
+import IPet from "@/app/interface/pet/IPet";
 import { Router, useRouter } from "expo-router";
 
 interface PetCardProps {
@@ -9,7 +9,7 @@ interface PetCardProps {
 }
 
 const PetCard: React.FC<PetCardProps> = ({ pet }) => {
-  const { getImageUrlByBreed, formattedPrice } = useGlobal();
+  const { getImageUrlByBreed, formattedAge, formattedPrice } = useGlobal();
   const router = useRouter();
 
   const goToPetDetail = (router: Router, slug: string) => {
@@ -37,11 +37,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
       <View style={styles.infoContainer}>
         <Text style={styles.breed}>{pet.breed}</Text>
         <Text style={styles.name}>{pet.name}</Text>
-        <Text style={styles.age}>
-          {pet.age < 1
-            ? `Age: ${Math.round(pet.age * 12)} months`
-            : `Age: ${pet.age} ${pet.age > 1 ? "years" : "year"}`}
-        </Text>
+        <Text style={styles.age}>{formattedAge(pet.age)}</Text>
         <Text style={styles.price}>{"Rp " + formattedPrice(pet.price)}</Text>
       </View>
     </TouchableOpacity>
@@ -62,7 +58,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: "100%",
-    height: 180,
+    height: 150,
     overflow: "hidden",
   },
   image: {

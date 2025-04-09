@@ -1,22 +1,29 @@
-import { IPet } from "../interface/pet/IPet";
-import { IRole } from "../interface/user/IRole";
-import { IService } from "../interface/service/IService";
-import { IServiceCategory } from "../interface/service/IServiceCategory";
-import { ISpecies } from "../interface/pet/ISpecies";
-import { ITransaction } from "../interface/transaction/ITransaction";
-import { IUser } from "../interface/user/IUser";
-import { IForumPost } from "../interface/forum/IForumPost";
-import { IForumCategory } from "../interface/forum/IForumCategory";
-import { IForumComment } from "../interface/forum/IForumComment";
-import { IAdoptionTransaction } from "../interface/transaction/IAdoptionTransaction";
-import { IServiceTransaction } from "../interface/transaction/IServiceTransaction";
+import IPet from "../interface/pet/IPet";
+import IRole from "../interface/user/IRole";
+import IService from "../interface/service/IService";
+import IServiceCategory from "../interface/service/IServiceCategory";
+import ISpecies from "../interface/pet/ISpecies";
+import ITransaction from "../interface/transaction/ITransaction";
+import IUser from "../interface/user/IUser";
+import IForumPost from "../interface/forum/IForumPost";
+import IForumCategory from "../interface/forum/IForumCategory";
+import IForumComment from "../interface/forum/IForumComment";
+import IAdoptionTransaction from "../interface/transaction/IAdoptionTransaction";
+import IServiceTransaction from "../interface/transaction/IServiceTransaction";
 
 export enum GlobalActionType {
   // Global
   SET_MESSAGE_MODAL = "SET_MESSAGE_MODAL",
   SET_FILTER_MODAL = "SET_FILTER_MODAL",
+  SET_REMOVE_ITEM_MODAL = "SET_REMOVE_ITEM_MODAL",
   SET_LOADING = "SET_LOADING",
   SET_ERROR = "SET_ERROR",
+
+  // Navbar
+  SET_DROPDOWN_MENU = "SET_DROPDOWN_MENU",
+  TOGGLE_DROPDOWN_MENU = "TOGGLE_DROPDOWN_MENU",
+  SET_USER_DROPDOWN_MENU = "SET_USER_DROPDOWN_MENU",
+  TOGGLE_USER_DROPDOWN_MENU = "TOGGLE_USER_DROPDOWN_MENU",
 
   // Users
   SET_USER_REGISTER = "SET_USER_REGISTER",
@@ -30,6 +37,8 @@ export enum GlobalActionType {
   REGISTER_USER = "REGISTER_USER",
   SET_REGISTER_ERROR_MESSAGES = "SET_REGISTER_ERROR_MESSAGES",
   RESET_REGISTER_ERROR_MESSAGES = "RESET_REGISTER_ERROR_MESSAGES",
+  SET_LOGIN_ERROR_MESSAGES = "SET_LOGIN_ERROR_MESSAGES",
+  RESET_LOGIN_ERROR_MESSAGES = "RESET_LOGIN_ERROR_MESSAGES",
   SET_LOGGED_IN = "SET_LOGGED_IN",
 
   // Pets
@@ -37,9 +46,13 @@ export enum GlobalActionType {
   GET_ALL_SPECIES = "GET_ALL_SPECIES",
   SET_PET_FILTER = "SET_PET_FILTER",
   RESET_PET_FILTERS = "RESTE_PET_FILTERS",
+  SET_PET_FILTERS_ERROR_MESSAGES = "SET_PET_FILTERS_ERROR_MESSAGES",
+  RESET_PET_FILTERS_ERROR_MESSAGES = "RESET_PET_FILTERS_ERROR_MESSAGES",
   GET_PET_DETAIL = "GET_PET_DETAIL",
   SET_NEW_PET = "SET_NEW_PET",
   RESET_NEW_PET = "RESET_NEW_PET",
+  SET_NEW_PET_ERROR_MESSAGES = "SET_NEW_PET_ERROR_MESSAGES",
+  RESET_NEW_PET_ERROR_MESSAGES = "RESET_NEW_PET_ERROR_MESSAGES",
   ADD_NEW_PET = "ADD_NEW_PET",
   EDIT_PET = "EDIT_PET",
   REMOVE_PET = "REMOVE_PET",
@@ -57,10 +70,14 @@ export enum GlobalActionType {
   GET_ALL_SERVICE_CATEGORIES = "GET_ALL_SERVICE_CATEGORIES",
   SET_SERVICE_FILTER = "SET_SERVICE_FILTER",
   RESET_SERVICE_FILTERS = "RESET_SERVICE_FILTERS",
+  SET_SERVICE_FILTERS_ERROR_MESSAGES = "SET_SERVICE_FILTERS_ERROR_MESSAGES",
+  RESET_SERVICE_FILTERS_ERROR_MESSAGES = "RESET_SERVICE_FILTERS_ERROR_MESSAGES",
   GET_SERVICE_DETAIL = "GET_SERVICE_DETAIL",
   BOOK_SERVICE = "BOOK_SERVICE",
   SET_NEW_SERVICE = "SET_NEW_SERVICE",
   RESET_NEW_SERVICE = "RESET_NEW_SERVICE",
+  SET_NEW_SERVICE_ERROR_MESSAGES = "SET_NEW_SERVICE_ERROR_MESSAGES",
+  RESET_NEW_SERVICE_ERROR_MESSAGES = "RESET_NEW_SERVICE_ERROR_MESSAGES",
   ADD_NEW_SERVICE = "ADD_NEW_SERVICE",
   EDIT_SERVICE = "EDIT_SERVICE",
   REMOVE_SERVICE = "REMOVE_SERVICE",
@@ -83,8 +100,8 @@ export enum GlobalActionType {
   GET_FORUM_COMMENTS = "GET_FORUM_COMMENTS",
   SET_NEW_FORUM_POST = "SET_NEW_FORUM_POST",
   RESET_NEW_FORUM_POST = "RESET_NEW_FORUM_POST",
-  SET_NEW_FORUM_ERROR_MESSAGES = "SET_NEW_FORUM_ERROR_MESSAGES",
-  RESET_NEW_FORUM_ERROR_MESSAGES = "RESET_NEW_FORUM_ERROR_MESSAGES",
+  SET_NEW_FORUM_POST_ERROR_MESSAGE = "SET_NEW_FORUM_POST_ERROR_MESSAGE",
+  RESET_NEW_FORUM_POST_ERROR_MESSAGE = "RESET_NEW_FORUM_POST_ERROR_MESSAGE",
   SET_NEW_FORUM_COMMENT = "SET_NEW_FORUM_COMMENT",
   RESET_NEW_FORUM_COMMENT = "RESET_NEW_FORUM_COMMENT",
   ADD_FORUM_POST = "ADD_FORUM_POST",
@@ -95,8 +112,15 @@ export type GlobalAction =
   // Global
   | { type: GlobalActionType.SET_MESSAGE_MODAL; payload: boolean }
   | { type: GlobalActionType.SET_FILTER_MODAL; payload: boolean }
+  | { type: GlobalActionType.SET_REMOVE_ITEM_MODAL; payload: boolean }
   | { type: GlobalActionType.SET_LOADING; payload: boolean }
   | { type: GlobalActionType.SET_ERROR; payload: string | null }
+
+  // Navbar
+  | { type: GlobalActionType.SET_DROPDOWN_MENU; payload: boolean }
+  | { type: GlobalActionType.TOGGLE_DROPDOWN_MENU }
+  | { type: GlobalActionType.SET_USER_DROPDOWN_MENU; payload: boolean }
+  | { type: GlobalActionType.TOGGLE_USER_DROPDOWN_MENU }
 
   // Users, Register, Login
   | {
@@ -128,6 +152,13 @@ export type GlobalAction =
   | {
       type: GlobalActionType.RESET_REGISTER_ERROR_MESSAGES;
     }
+  | {
+      type: GlobalActionType.SET_LOGIN_ERROR_MESSAGES;
+      payload: Record<string, string>;
+    }
+  | {
+      type: GlobalActionType.RESET_LOGIN_ERROR_MESSAGES;
+    }
   | { type: GlobalActionType.GET_LOGGED_IN_USER; payload: IUser }
   | {
       type: GlobalActionType.GET_USER_ROLES;
@@ -152,6 +183,13 @@ export type GlobalAction =
       type: GlobalActionType.RESET_PET_FILTERS;
     }
   | {
+      type: GlobalActionType.SET_PET_FILTERS_ERROR_MESSAGES;
+      payload: Record<string, string>;
+    }
+  | {
+      type: GlobalActionType.RESET_PET_FILTERS_ERROR_MESSAGES;
+    }
+  | {
       type: GlobalActionType.GET_PET_DETAIL;
       payload: IPet;
     }
@@ -161,6 +199,13 @@ export type GlobalAction =
     }
   | {
       type: GlobalActionType.RESET_NEW_PET;
+    }
+  | {
+      type: GlobalActionType.SET_NEW_PET_ERROR_MESSAGES;
+      payload: Record<string, string>;
+    }
+  | {
+      type: GlobalActionType.RESET_NEW_PET_ERROR_MESSAGES;
     }
   | {
       type: GlobalActionType.ADD_NEW_PET;
@@ -198,6 +243,13 @@ export type GlobalAction =
       type: GlobalActionType.RESET_SERVICE_FILTERS;
     }
   | {
+      type: GlobalActionType.SET_SERVICE_FILTERS_ERROR_MESSAGES;
+      payload: Record<string, string>;
+    }
+  | {
+      type: GlobalActionType.RESET_SERVICE_FILTERS_ERROR_MESSAGES;
+    }
+  | {
       type: GlobalActionType.GET_SERVICE_DETAIL;
       payload: IService;
     }
@@ -210,6 +262,13 @@ export type GlobalAction =
     }
   | {
       type: GlobalActionType.RESET_NEW_SERVICE;
+    }
+  | {
+      type: GlobalActionType.SET_NEW_SERVICE_ERROR_MESSAGES;
+      payload: Record<string, string>;
+    }
+  | {
+      type: GlobalActionType.RESET_NEW_SERVICE_ERROR_MESSAGES;
     }
   | {
       type: GlobalActionType.ADD_NEW_SERVICE;
@@ -280,11 +339,11 @@ export type GlobalAction =
       type: GlobalActionType.RESET_NEW_FORUM_POST;
     }
   | {
-      type: GlobalActionType.SET_NEW_FORUM_ERROR_MESSAGES;
-      payload: string[];
+      type: GlobalActionType.SET_NEW_FORUM_POST_ERROR_MESSAGE;
+      payload: { name: string; value: string | number };
     }
   | {
-      type: GlobalActionType.RESET_NEW_FORUM_ERROR_MESSAGES;
+      type: GlobalActionType.RESET_NEW_FORUM_POST_ERROR_MESSAGE;
     }
   | {
       type: GlobalActionType.SET_NEW_FORUM_COMMENT;

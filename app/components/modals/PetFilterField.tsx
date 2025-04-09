@@ -7,73 +7,81 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { usePets } from "@/app/context/pets/PetsContext";
-import { Picker } from "@react-native-picker/picker";
+import SelectField from "../FormField/SelectField";
+import InputField from "../FormField/InputField";
 
 const PetFilterField = () => {
-  const { species, fetchSpecies, filters, setFilters } = usePets();
+  const {
+    species,
+    fetchSpecies,
+    filters,
+    setFilters,
+    petFiltersErrorMessages,
+  } = usePets();
 
   useEffect(() => {
     fetchSpecies();
   }, []);
 
   // Handle input change
-  const handleInputChange = (name: string, value: string) => {
+  const handleInputChange = (name: string, value: number | string) => {
     setFilters(name, value);
   };
 
   return (
     <View style={styles.container}>
       {/* Species */}
-      <Text style={styles.label}>Species</Text>
-      <Picker
-        selectedValue={filters.species}
-        style={styles.input}
-        onValueChange={(itemValue) => handleInputChange("species", itemValue)}
-      >
-        <Picker.Item label="All" value="" />
-        {species.map((speciesItem) => (
-          <Picker.Item
-            key={speciesItem.speciesId}
-            label={speciesItem.name}
-            value={speciesItem.name}
-          />
-        ))}
-      </Picker>
+      <SelectField
+        label="Species"
+        name="species"
+        value={filters.species}
+        onChange={handleInputChange}
+        options={species}
+        error={petFiltersErrorMessages.Species}
+      />
 
       {/* Min Age */}
-      <Text style={styles.label}>Min Age</Text>
-      <TextInput
-        style={styles.input}
+      <InputField
+        label="Min Age"
+        name="minAge"
+        type="number"
+        placeholder="Enter minimum age"
         value={filters.minAge}
-        onChangeText={(text) => handleInputChange("minAge", text)}
-        keyboardType="numeric"
+        onChange={handleInputChange}
+        error={petFiltersErrorMessages.MinAge}
       />
 
       {/* Max Age */}
-      <Text style={styles.label}>Max Age</Text>
-      <TextInput
-        style={styles.input}
+      <InputField
+        label="Max Age"
+        name="maxAge"
+        type="number"
+        placeholder="Enter maximum age"
         value={filters.maxAge}
-        onChangeText={(text) => handleInputChange("maxAge", text)}
-        keyboardType="numeric"
+        onChange={handleInputChange}
+        error={petFiltersErrorMessages.MaxAge}
       />
 
       {/* Min Price */}
-      <Text style={styles.label}>Min Price</Text>
-      <TextInput
-        style={styles.input}
+      <InputField
+        label="Min Price"
+        name="minPrice"
+        type="number"
+        placeholder="Enter minimum price"
         value={filters.minPrice}
-        onChangeText={(text) => handleInputChange("minPrice", text)}
-        keyboardType="numeric"
+        onChange={handleInputChange}
+        error={petFiltersErrorMessages.MinPrice}
       />
 
       {/* Max Price */}
-      <Text style={styles.label}>Max Price</Text>
-      <TextInput
-        style={styles.input}
+      <InputField
+        label="Max Price"
+        name="maxPrice"
+        type="number"
+        placeholder="Enter maximum price"
         value={filters.maxPrice}
-        onChangeText={(text) => handleInputChange("maxPrice", text)}
-        keyboardType="numeric"
+        onChange={handleInputChange}
+        error={petFiltersErrorMessages.MaxPrice}
       />
     </View>
   );
@@ -83,6 +91,17 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     paddingVertical: 10,
+  },
+  pickerWrapper: {
+    borderColor: "#D1D5DB",
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 15,
+    overflow: "hidden",
+  },
+  picker: {
+    color: "#333333",
+    backgroundColor: "#FFFFFF",
   },
   label: {
     color: "#4B5563", // gray-600

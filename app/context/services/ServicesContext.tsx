@@ -2,14 +2,17 @@
 
 import { createContext, ReactNode, useContext, useReducer } from "react";
 import api from "@/lib/apiClient";
-import { IServiceCategory } from "@/app/interface/service/IServiceCategory";
-import { IService } from "@/app/interface/service/IService";
-import { IServiceFilterParams } from "@/app/interface/service/IServiceFilterParams";
+import IServiceCategory from "@/app/interface/service/IServiceCategory";
+import IService from "@/app/interface/service/IService";
+import IServiceFilterParams from "@/app/interface/service/IServiceFilterParams";
 import { initialState, ServicesReducer } from "./ServicesReducer";
 import { GlobalActionType } from "../GlobalActions";
-import { INewService } from "@/app/interface/service/INewService";
+import INewService from "@/app/interface/service/INewService";
 import { useGlobal } from "../GlobalContext";
 import { useRouter } from "expo-router";
+import INewServiceErrorMessage from "@/app/interface/service/INewServiceErrorMessage";
+import IServiceFilterErrorMessage from "@/app/interface/service/IServiceFiltersErrorMessage";
+import IPet from "@/app/interface/pet/IPet";
 
 interface ServicesContextType {
   service_categories: IServiceCategory[];
@@ -18,6 +21,8 @@ interface ServicesContextType {
   service: IService;
   newService: INewService;
   filters: IServiceFilterParams;
+  serviceFiltersErrorMessages: IServiceFilterErrorMessage;
+  newServiceErrorMessages: INewServiceErrorMessage;
   setFilters: (name: string, value: string) => void;
   resetFilters: () => void;
   fetchServices: () => Promise<void>;
@@ -30,10 +35,12 @@ interface ServicesContextType {
     bookingDate: string
   ) => Promise<void>;
   setNewService: (name: string, value: string | number) => void;
+  resetNewService: () => void;
   addNewService: () => Promise<void>;
   editService: (serviceId: number) => Promise<void>;
   removeService: (serviceId: number) => Promise<void>;
   fetchProviderServices: (providerId: number) => Promise<void>;
+  isIService: (item: IPet | IService) => item is IService;
   loading: boolean;
   error: string | null;
 }
@@ -45,13 +52,22 @@ const ServicesContext = createContext<ServicesContextType | undefined>(
 export function ServicesProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(ServicesReducer, initialState);
 
-  const { handleOpenMessageModal } = useGlobal();
+  const {
+    handleOpenMessageModal,
+    handleCloseMessageModal,
+    handleCloseFilterModal,
+  } = useGlobal();
   const router = useRouter();
 
   const fetchServices = async () => {
-    try {
-      dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+    dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
 
+    // Reset error messages sebelum mengirim request
+    dispatch({
+      type: GlobalActionType.RESET_SERVICE_FILTERS_ERROR_MESSAGES,
+    });
+
+    try {
       const response = await api.get("/services-list", {
         params: {
           name: state.filters.searchValue,
@@ -62,20 +78,72 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         },
       });
 
-      if (response.data && Array.isArray(response.data)) {
+      if (
+        !response.data.errors &&
+        response.data &&
+        Array.isArray(response.data)
+      ) {
         dispatch({
           type: GlobalActionType.GET_ALL_SERVICES,
           payload: response.data,
         });
+
+        handleCloseFilterModal();
       } else {
         console.error("Invalid API response format:", response.data);
+
+        if (response.data.errors) {
+          // Store the property name and error message for each field
+          const errors = response.data.errors.reduce(
+            (
+              acc: Record<string, string>,
+              error: { propertyName: string; errorMessage: string }
+            ) => {
+              if (!acc[error.propertyName]) {
+                acc[error.propertyName] = error.errorMessage;
+              }
+              return acc;
+            },
+            {}
+          );
+
+          // Set error messages
+          dispatch({
+            type: GlobalActionType.SET_SERVICE_FILTERS_ERROR_MESSAGES,
+            payload: errors,
+          });
+        }
+
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: "Fetch Service List failed",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching pets:", error);
+
+      if (error?.response?.data?.errors) {
+        // Store the property name and error message for each field
+        const errors = error?.response?.data?.errors?.reduce(
+          (
+            acc: Record<string, string>,
+            error: { propertyName: string; errorMessage: string }
+          ) => {
+            if (!acc[error.propertyName]) {
+              acc[error.propertyName] = error.errorMessage;
+            }
+            return acc;
+          },
+          {}
+        );
+
+        // Set error messages
+        dispatch({
+          type: GlobalActionType.SET_SERVICE_FILTERS_ERROR_MESSAGES,
+          payload: errors,
+        });
+      }
+
       dispatch({
         type: GlobalActionType.SET_ERROR,
         payload: "Fetch Service List failed",
@@ -204,13 +272,24 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const resetNewService = () => {
+    dispatch({
+      type: GlobalActionType.RESET_NEW_SERVICE,
+    });
+  };
+
   const addNewService = async () => {
     dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+
+    // Reset error messages sebelum mengirim request
+    dispatch({
+      type: GlobalActionType.RESET_NEW_SERVICE_ERROR_MESSAGES,
+    });
 
     try {
       const response = await api.post(`/input-new-services`, state.newService);
 
-      if (response.data) {
+      if (!response.data.errors) {
         dispatch({
           type: GlobalActionType.ADD_NEW_SERVICE,
         });
@@ -222,17 +301,64 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         handleOpenMessageModal();
 
         setTimeout(() => {
+          handleCloseMessageModal();
           router.push("/my-services");
         }, 3000);
       } else {
         console.error("Invalid API response format:", response.data);
+
+        if (response.data.errors) {
+          // Store the property name and error message for each field
+          const errors = response.data.errors.reduce(
+            (
+              acc: Record<string, string>,
+              error: { propertyName: string; errorMessage: string }
+            ) => {
+              if (!acc[error.propertyName]) {
+                acc[error.propertyName] = error.errorMessage;
+              }
+              return acc;
+            },
+            {}
+          );
+
+          // Set error messages
+          dispatch({
+            type: GlobalActionType.SET_NEW_SERVICE_ERROR_MESSAGES,
+            payload: errors,
+          });
+        }
+
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: "Add new service failed",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding new service:", error);
+
+      if (error?.response?.data?.errors) {
+        // Store the property name and error message for each field
+        const errors = error?.response?.data?.errors?.reduce(
+          (
+            acc: Record<string, string>,
+            error: { propertyName: string; errorMessage: string }
+          ) => {
+            if (!acc[error.propertyName]) {
+              acc[error.propertyName] = error.errorMessage;
+            }
+            return acc;
+          },
+          {}
+        );
+
+        // Set error messages
+        dispatch({
+          type: GlobalActionType.SET_NEW_SERVICE_ERROR_MESSAGES,
+          payload: errors,
+        });
+      }
+
       dispatch({
         type: GlobalActionType.SET_ERROR,
         payload: "Add new service failed",
@@ -244,6 +370,11 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
 
   const editService = async (serviceId: number) => {
     dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+
+    // Reset error messages sebelum mengirim request
+    dispatch({
+      type: GlobalActionType.RESET_NEW_SERVICE_ERROR_MESSAGES,
+    });
 
     try {
       const response = await api.put(
@@ -263,17 +394,64 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         handleOpenMessageModal();
 
         setTimeout(() => {
+          handleCloseMessageModal();
           router.push("/my-services");
         }, 3000);
       } else {
         console.error("Invalid API response format:", response.data);
+
+        if (response.data.errors) {
+          // Store the property name and error message for each field
+          const errors = response.data.errors.reduce(
+            (
+              acc: Record<string, string>,
+              error: { propertyName: string; errorMessage: string }
+            ) => {
+              if (!acc[error.propertyName]) {
+                acc[error.propertyName] = error.errorMessage;
+              }
+              return acc;
+            },
+            {}
+          );
+
+          // Set error messages
+          dispatch({
+            type: GlobalActionType.SET_NEW_SERVICE_ERROR_MESSAGES,
+            payload: errors,
+          });
+        }
+
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: "Edit service failed",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating service:", error);
+
+      if (error?.response?.data?.errors) {
+        // Store the property name and error message for each field
+        const errors = error?.response?.data?.errors?.reduce(
+          (
+            acc: Record<string, string>,
+            error: { propertyName: string; errorMessage: string }
+          ) => {
+            if (!acc[error.propertyName]) {
+              acc[error.propertyName] = error.errorMessage;
+            }
+            return acc;
+          },
+          {}
+        );
+
+        // Set error messages
+        dispatch({
+          type: GlobalActionType.SET_NEW_SERVICE_ERROR_MESSAGES,
+          payload: errors,
+        });
+      }
+
       dispatch({
         type: GlobalActionType.SET_ERROR,
         payload: "Edit service failed",
@@ -295,6 +473,10 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         });
 
         handleOpenMessageModal();
+
+        setTimeout(() => {
+          router.push("/my-services");
+        }, 3000);
       } else {
         console.error("Invalid API response format:", response.data);
         dispatch({
@@ -316,6 +498,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
   const fetchProviderServices = async (providerId: number) => {
     try {
       dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+      dispatch({ type: GlobalActionType.SET_ERROR, payload: null });
 
       const response = await api.get(`/get-provider-services/${providerId}`);
 
@@ -342,6 +525,10 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const isIService = (item: IPet | IService): item is IService => {
+    return "category" in item;
+  };
+
   return (
     <ServicesContext.Provider
       value={{
@@ -351,6 +538,8 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         service: state.service,
         newService: state.newService,
         filters: state.filters,
+        serviceFiltersErrorMessages: state.serviceFiltersErrorMessages,
+        newServiceErrorMessages: state.newServiceErrorMessages,
         setFilters,
         resetFilters,
         fetchServices,
@@ -358,10 +547,12 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         fetchServiceDetail,
         bookService,
         setNewService,
+        resetNewService,
         addNewService,
         editService,
         removeService,
         fetchProviderServices,
+        isIService,
         loading: state.loading,
         error: state.error,
       }}

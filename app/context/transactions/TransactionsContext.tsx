@@ -5,8 +5,8 @@ import api from "@/lib/apiClient";
 import { GlobalActionType } from "../GlobalActions";
 import { TransactionsReducer, initialState } from "./TransactionsReducer";
 import { ITransaction } from "@/app/interface/transaction/ITransaction";
-import { IAdoptionTransaction } from "@/app/interface/transaction/IAdoptionTransaction";
-import { IServiceTransaction } from "@/app/interface/transaction/IServiceTransaction";
+import IAdoptionTransaction from "@/app/interface/transaction/IAdoptionTransaction";
+import IServiceTransaction from "@/app/interface/transaction/IServiceTransaction";
 
 interface TransactionsContextType {
   transaction: IAdoptionTransaction | IServiceTransaction;

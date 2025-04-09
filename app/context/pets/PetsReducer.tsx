@@ -1,8 +1,10 @@
-import { IPet } from "@/app/interface/pet/IPet";
-import { IPetFilterParams } from "../../interface/pet/IPetFilterParams";
-import { ISpecies } from "../../interface/pet/ISpecies";
+import IPet from "@/app/interface/pet/IPet";
+import IPetFilterParams from "../../interface/pet/IPetFilterParams";
+import ISpecies from "../../interface/pet/ISpecies";
 import { GlobalAction, GlobalActionType } from "../GlobalActions";
-import { INewPet } from "@/app/interface/pet/INewPet";
+import INewPet from "@/app/interface/pet/INewPet";
+import INewPetErrorMessage from "@/app/interface/pet/INewPetErrorMessage";
+import IPetFilterErrorMessage from "@/app/interface/pet/IPetFiltersErrorMessage";
 
 export interface PetState {
   species: ISpecies[];
@@ -11,6 +13,8 @@ export interface PetState {
   pet: IPet;
   newPet: INewPet;
   filters: IPetFilterParams;
+  petFiltersErrorMessages: IPetFilterErrorMessage;
+  newPetErrorMessages: INewPetErrorMessage;
   loading: boolean;
   error: string | null;
 }
@@ -29,6 +33,23 @@ export const initialState: PetState = {
     minPrice: "",
     maxPrice: "",
   } as IPetFilterParams,
+  petFiltersErrorMessages: {
+    SearchValue: "",
+    Species: "",
+    MinAge: "",
+    MaxAge: "",
+    MinPrice: "",
+    MaxPrice: "",
+  },
+  newPetErrorMessages: {
+    Name: "",
+    Breed: "",
+    SpeciesId: "",
+    Age: "",
+    Gender: "",
+    Price: "",
+    OwnerId: "",
+  },
   loading: false,
   error: null,
 };
@@ -59,6 +80,26 @@ export function PetsReducer(state: PetState, action: GlobalAction) {
           maxPrice: "",
         },
       };
+    case GlobalActionType.SET_PET_FILTERS_ERROR_MESSAGES:
+      return {
+        ...state,
+        petFiltersErrorMessages: {
+          ...state.petFiltersErrorMessages,
+          ...action.payload,
+        },
+      };
+    case GlobalActionType.RESET_PET_FILTERS_ERROR_MESSAGES:
+      return {
+        ...state,
+        petFiltersErrorMessages: {
+          SearchValue: "",
+          Species: "",
+          MinAge: "",
+          MaxAge: "",
+          MinPrice: "",
+          MaxPrice: "",
+        },
+      };
     case GlobalActionType.GET_PET_DETAIL:
       return { ...state, pet: action.payload };
     case GlobalActionType.SET_NEW_PET:
@@ -83,6 +124,27 @@ export function PetsReducer(state: PetState, action: GlobalAction) {
           price: 0,
           imageUrl: "",
           ownerId: 0,
+        },
+      };
+    case GlobalActionType.SET_NEW_PET_ERROR_MESSAGES:
+      return {
+        ...state,
+        newPetErrorMessages: {
+          ...state.newPetErrorMessages,
+          ...action.payload,
+        },
+      };
+    case GlobalActionType.RESET_NEW_PET_ERROR_MESSAGES:
+      return {
+        ...state,
+        newPetErrorMessages: {
+          Name: "",
+          Breed: "",
+          SpeciesId: "",
+          Age: "",
+          Gender: "",
+          Price: "",
+          OwnerId: "",
         },
       };
     case GlobalActionType.ADD_NEW_PET:

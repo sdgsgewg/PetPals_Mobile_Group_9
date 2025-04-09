@@ -1,16 +1,20 @@
-import { IService } from "@/app/interface/service/IService";
-import { IServiceCategory } from "@/app/interface/service/IServiceCategory";
-import { IServiceFilterParams } from "@/app/interface/service/IServiceFilterParams";
+import IService from "@/app/interface/service/IService";
+import IServiceCategory from "@/app/interface/service/IServiceCategory";
+import IServiceFilterParams from "@/app/interface/service/IServiceFilterParams";
 import { GlobalAction, GlobalActionType } from "../GlobalActions";
-import { INewService } from "@/app/interface/service/INewService";
+import INewService from "@/app/interface/service/INewService";
+import INewServiceErrorMessage from "@/app/interface/service/INewServiceErrorMessage";
+import IServiceFilterErrorMessage from "@/app/interface/service/IServiceFiltersErrorMessage";
 
 export interface ServiceState {
   service_categories: IServiceCategory[];
   services: IService[];
   providerServices: IService[];
   filters: IServiceFilterParams;
+  serviceFiltersErrorMessages: IServiceFilterErrorMessage;
   service: IService;
   newService: INewService;
+  newServiceErrorMessages: INewServiceErrorMessage;
   loading: boolean;
   error: string | null;
 }
@@ -25,8 +29,22 @@ export const initialState: ServiceState = {
     minPrice: "",
     maxPrice: "",
   } as IServiceFilterParams,
+  serviceFiltersErrorMessages: {
+    SearchValue: "",
+    CategoryName: "",
+    MinPrice: "",
+    MaxPrice: "",
+  },
   service: {} as IService,
   newService: {} as INewService,
+  newServiceErrorMessages: {
+    Name: "",
+    CategoryId: "",
+    Price: "",
+    Address: "",
+    City: "",
+    ProviderId: "",
+  },
   loading: false,
   error: null,
 };
@@ -55,6 +73,24 @@ export function ServicesReducer(state: ServiceState, action: GlobalAction) {
           maxPrice: "",
         },
       };
+    case GlobalActionType.SET_SERVICE_FILTERS_ERROR_MESSAGES:
+      return {
+        ...state,
+        serviceFiltersErrorMessages: {
+          ...state.serviceFiltersErrorMessages,
+          ...action.payload,
+        },
+      };
+    case GlobalActionType.RESET_SERVICE_FILTERS_ERROR_MESSAGES:
+      return {
+        ...state,
+        serviceFiltersErrorMessages: {
+          SearchValue: "",
+          CategoryName: "",
+          MinPrice: "",
+          MaxPrice: "",
+        },
+      };
     case GlobalActionType.GET_SERVICE_DETAIL:
       return { ...state, service: action.payload };
     case GlobalActionType.BOOK_SERVICE:
@@ -80,6 +116,26 @@ export function ServicesReducer(state: ServiceState, action: GlobalAction) {
           address: "",
           city: "",
           createdBy: "",
+        },
+      };
+    case GlobalActionType.SET_NEW_SERVICE_ERROR_MESSAGES:
+      return {
+        ...state,
+        newServiceErrorMessages: {
+          ...state.newServiceErrorMessages,
+          ...action.payload,
+        },
+      };
+    case GlobalActionType.RESET_NEW_SERVICE_ERROR_MESSAGES:
+      return {
+        ...state,
+        newServiceErrorMessages: {
+          Name: "",
+          CategoryId: "",
+          Price: "",
+          Address: "",
+          City: "",
+          ProviderId: "",
         },
       };
     case GlobalActionType.ADD_NEW_SERVICE:

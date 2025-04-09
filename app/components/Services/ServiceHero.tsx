@@ -1,20 +1,25 @@
 import React from "react";
-import { View, Text, ImageBackground, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  useWindowDimensions,
+} from "react-native";
 import SearchBox from "../SearchFilter/SearchBox";
 import FilterBox from "../SearchFilter/FilterBox";
 import SearchFilterBox from "../SearchFilter/SearchFilterBox";
 import { useServices } from "@/app/context/services/ServicesContext";
 
-// Get device width and height for responsive design
-const { width, height } = Dimensions.get("window");
-
 const ServiceHero = () => {
   const { filters } = useServices();
+  const { width, height } = useWindowDimensions();
+  const isSmallScreen = width < 360;
 
   const backgroundImage = require("@/assets/img/services.jpg");
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { height: height * 0.35 }]}>
       {/* Background Image */}
       <ImageBackground source={backgroundImage} style={styles.imageBackground}>
         {/* Overlay */}
@@ -22,7 +27,9 @@ const ServiceHero = () => {
 
         {/* Search and Filter */}
         <View style={styles.content}>
-          <Text style={styles.title}>Find Your Best Services</Text>
+          <Text style={[styles.title, { fontSize: isSmallScreen ? 24 : 30 }]}>
+            Find Your Best Services
+          </Text>
           <SearchFilterBox>
             <SearchBox
               searchType="services"
@@ -39,7 +46,6 @@ const ServiceHero = () => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: height * 0.4, // Responsive height based on device size
   },
   imageBackground: {
     flex: 1,
@@ -57,11 +63,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "90%",
     alignItems: "center",
-    paddingHorizontal: 16, // Add padding for smaller screens
   },
   title: {
     width: "100%",
-    fontSize: width < 350 ? 24 : 32, // Responsive font size based on screen width
     fontWeight: "bold",
     color: "white",
     marginBottom: 16,

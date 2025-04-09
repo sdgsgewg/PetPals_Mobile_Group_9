@@ -1,9 +1,10 @@
-import { IForumComment } from "@/app/interface/forum/IForumComment";
-import { IForumPost } from "@/app/interface/forum/IForumPost";
+import IForumComment from "@/app/interface/forum/IForumComment";
+import IForumPost from "@/app/interface/forum/IForumPost";
 import { GlobalAction, GlobalActionType } from "../GlobalActions";
-import { IForumCategory } from "@/app/interface/forum/IForumCategory";
-import { INewForumPost } from "@/app/interface/forum/INewForumPost";
-import { INewForumComment } from "@/app/interface/forum/INewForumComment";
+import IForumCategory from "@/app/interface/forum/IForumCategory";
+import INewForumPost from "@/app/interface/forum/INewForumPost";
+import INewForumComment from "@/app/interface/forum/INewForumComment";
+import INewForumPostErrorMessage from "@/app/interface/forum/INewForumPostErrorMessage";
 
 export interface ForumState {
   forumCategories: IForumCategory[];
@@ -11,6 +12,7 @@ export interface ForumState {
   forumPosts: IForumPost[];
   forumPost: IForumPost;
   newForumPost: INewForumPost;
+  newForumPostErrorMessage: INewForumPostErrorMessage;
   forumComments: IForumComment[];
   newForumComment: INewForumComment;
   loading: boolean;
@@ -23,6 +25,12 @@ export const initialState: ForumState = {
   forumPosts: [],
   forumPost: {} as IForumPost,
   newForumPost: {} as INewForumPost,
+  newForumPostErrorMessage: {
+    UserId: "",
+    ForumCategoryId: "",
+    Title: "",
+    Content: "",
+  },
   forumComments: [],
   newForumComment: {} as INewForumComment,
   loading: false,
@@ -57,6 +65,24 @@ export function ForumsReducer(state: ForumState, action: GlobalAction) {
           forumCategoryId: 0,
           title: "",
           content: "",
+        },
+      };
+    case GlobalActionType.SET_NEW_FORUM_POST_ERROR_MESSAGE:
+      return {
+        ...state,
+        newForumPostErrorMessage: {
+          ...state.newForumPostErrorMessage,
+          ...action.payload,
+        },
+      };
+    case GlobalActionType.RESET_NEW_FORUM_POST_ERROR_MESSAGE:
+      return {
+        ...state,
+        newForumPostErrorMessage: {
+          UserId: "",
+          ForumCategoryId: "",
+          Title: "",
+          Content: "",
         },
       };
     case GlobalActionType.ADD_FORUM_POST:

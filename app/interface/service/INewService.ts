@@ -1,4 +1,4 @@
-export interface INewService {
+interface INewService {
   serviceId?: number;
   providerId: number;
   name: string;
@@ -9,3 +9,5 @@ export interface INewService {
   city: string;
   createdBy: string;
 }
+
+export default INewService;

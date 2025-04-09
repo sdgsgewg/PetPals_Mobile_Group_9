@@ -1,58 +1,59 @@
 import React, { useEffect } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { useServices } from "@/app/context/services/ServicesContext";
-import { Picker } from "@react-native-picker/picker";
+import SelectField from "../FormField/SelectField";
+import InputField from "../FormField/InputField";
 
 const ServiceFilterField = () => {
-  const { service_categories, fetchServiceCategories, filters, setFilters } =
-    useServices();
+  const {
+    service_categories,
+    fetchServiceCategories,
+    filters,
+    setFilters,
+    serviceFiltersErrorMessages,
+  } = useServices();
 
   useEffect(() => {
     fetchServiceCategories();
   }, []);
 
   // Handle input change
-  const handleInputChange = (name: string, value: string) => {
+  const handleInputChange = (name: string, value: number | string) => {
     setFilters(name, value);
   };
 
   return (
     <View style={styles.container}>
       {/* Service Category */}
-      <Text style={styles.label}>Service Category</Text>
-      <Picker
-        selectedValue={filters.categoryName}
-        style={styles.input}
-        onValueChange={(itemValue) =>
-          handleInputChange("categoryName", itemValue)
-        }
-      >
-        <Picker.Item label="All" value="" />
-        {service_categories.map((service_category) => (
-          <Picker.Item
-            key={service_category.categoryId}
-            label={service_category.name}
-            value={service_category.name}
-          />
-        ))}
-      </Picker>
+      <SelectField
+        label="Service Category"
+        name="categoryName"
+        value={filters.categoryName}
+        onChange={handleInputChange}
+        options={service_categories}
+        error={serviceFiltersErrorMessages.CategoryName}
+      />
 
       {/* Min Price */}
-      <Text style={styles.label}>Min Price</Text>
-      <TextInput
-        style={styles.input}
+      <InputField
+        label="Min Price"
+        type="number"
+        name="minPrice"
+        placeholder="Minimum Price"
         value={filters.minPrice}
-        onChangeText={(text) => handleInputChange("minPrice", text)}
-        keyboardType="numeric"
+        onChange={handleInputChange}
+        error={serviceFiltersErrorMessages.MinPrice}
       />
 
       {/* Max Price */}
-      <Text style={styles.label}>Max Price</Text>
-      <TextInput
-        style={styles.input}
+      <InputField
+        label="Max Price"
+        type="number"
+        name="maxPrice"
+        placeholder="Maximum Price"
         value={filters.maxPrice}
-        onChangeText={(text) => handleInputChange("maxPrice", text)}
-        keyboardType="numeric"
+        onChange={handleInputChange}
+        error={serviceFiltersErrorMessages.MaxPrice}
       />
     </View>
   );

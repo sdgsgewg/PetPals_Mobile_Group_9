@@ -1,14 +1,16 @@
-"use client";
 import { createContext, ReactNode, useContext, useReducer } from "react";
-import { IPet } from "../../interface/pet/IPet";
+import IPet from "../../interface/pet/IPet";
 import { initialState, PetsReducer } from "./PetsReducer";
 import { GlobalActionType } from "../GlobalActions";
 import api from "@/lib/apiClient";
-import { IPetFilterParams } from "../../interface/pet/IPetFilterParams";
-import { ISpecies } from "../../interface/pet/ISpecies";
-import { INewPet } from "@/app/interface/pet/INewPet";
+import IPetFilterParams from "../../interface/pet/IPetFilterParams";
+import ISpecies from "../../interface/pet/ISpecies";
+import INewPet from "@/app/interface/pet/INewPet";
 import { useGlobal } from "../GlobalContext";
 import { useRouter } from "expo-router";
+import INewPetErrorMessage from "@/app/interface/pet/INewPetErrorMessage";
+import IPetFilterErrorMessage from "@/app/interface/pet/IPetFiltersErrorMessage";
+import IService from "@/app/interface/service/IService";
 
 interface PetsContextType {
   species: ISpecies[];
@@ -17,16 +19,20 @@ interface PetsContextType {
   pet: IPet;
   newPet: INewPet;
   filters: IPetFilterParams;
+  petFiltersErrorMessages: IPetFilterErrorMessage;
+  newPetErrorMessages: INewPetErrorMessage;
   setFilters: (name: string, value: string) => void;
   resetFilters: () => void;
   fetchPets: () => Promise<void>;
   fetchSpecies: () => Promise<void>;
   fetchPetDetail: (slug: string) => Promise<void>;
   setNewPet: (name: string, value: string | number) => void;
+  resetNewPet: () => void;
   addNewPet: () => Promise<void>;
   editPet: (petId: number) => Promise<void>;
   removePet: (petId: number) => Promise<void>;
   fetchOwnerPets: (ownerId: number) => Promise<void>;
+  isIPet: (item: IPet | IService) => item is IPet;
   loading: boolean;
   error: string | null;
 }
@@ -36,13 +42,23 @@ const PetsContext = createContext<PetsContextType | undefined>(undefined);
 export function PetsProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(PetsReducer, initialState);
 
-  const { handleOpenMessageModal } = useGlobal();
+  const {
+    handleOpenMessageModal,
+    handleCloseMessageModal,
+    handleCloseFilterModal,
+  } = useGlobal();
+
   const router = useRouter();
 
   const fetchPets = async () => {
-    try {
-      dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+    dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
 
+    // Reset error messages sebelum mengirim request
+    dispatch({
+      type: GlobalActionType.RESET_PET_FILTERS_ERROR_MESSAGES,
+    });
+
+    try {
       const response = await api.get("/adoption-list", {
         params: {
           name: state.filters.searchValue,
@@ -55,20 +71,72 @@ export function PetsProvider({ children }: { children: ReactNode }) {
         },
       });
 
-      if (response.data && Array.isArray(response.data)) {
+      if (
+        !response.data.errors &&
+        response.data &&
+        Array.isArray(response.data)
+      ) {
         dispatch({
           type: GlobalActionType.GET_AVAILABLE_PETS,
           payload: response.data,
         });
+
+        handleCloseFilterModal();
       } else {
         console.error("Invalid API response format:", response.data);
+
+        if (response.data.errors) {
+          // Store the property name and error message for each field
+          const errors = response.data.errors.reduce(
+            (
+              acc: Record<string, string>,
+              error: { propertyName: string; errorMessage: string }
+            ) => {
+              if (!acc[error.propertyName]) {
+                acc[error.propertyName] = error.errorMessage;
+              }
+              return acc;
+            },
+            {}
+          );
+
+          // Set error messages
+          dispatch({
+            type: GlobalActionType.SET_PET_FILTERS_ERROR_MESSAGES,
+            payload: errors,
+          });
+        }
+
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: "Fetch pets failed",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching pets:", error);
+
+      if (error?.response?.data?.errors) {
+        // Store the property name and error message for each field
+        const errors = error?.response?.data?.errors?.reduce(
+          (
+            acc: Record<string, string>,
+            error: { propertyName: string; errorMessage: string }
+          ) => {
+            if (!acc[error.propertyName]) {
+              acc[error.propertyName] = error.errorMessage;
+            }
+            return acc;
+          },
+          {}
+        );
+
+        // Set error messages
+        dispatch({
+          type: GlobalActionType.SET_PET_FILTERS_ERROR_MESSAGES,
+          payload: errors,
+        });
+      }
+
       dispatch({
         type: GlobalActionType.SET_ERROR,
         payload: "Fetch pets failed",
@@ -79,9 +147,9 @@ export function PetsProvider({ children }: { children: ReactNode }) {
   };
 
   const fetchSpecies = async () => {
-    try {
-      dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+    dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
 
+    try {
       const response = await api.get("/get-species", {
         params: {
           speciesId: "",
@@ -126,9 +194,9 @@ export function PetsProvider({ children }: { children: ReactNode }) {
   };
 
   const fetchPetDetail = async (slug: string) => {
-    try {
-      dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+    dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
 
+    try {
       const response = await api.get(`/adoption-list/${slug}`);
 
       if (response.data && response.data.petId) {
@@ -161,13 +229,24 @@ export function PetsProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const resetNewPet = () => {
+    dispatch({
+      type: GlobalActionType.RESET_NEW_PET,
+    });
+  };
+
   const addNewPet = async () => {
     dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+
+    // Reset error messages sebelum mengirim request
+    dispatch({
+      type: GlobalActionType.RESET_NEW_PET_ERROR_MESSAGES,
+    });
 
     try {
       const response = await api.post(`/input-new-pets`, state.newPet);
 
-      if (response.data) {
+      if (!response.data.errors) {
         dispatch({
           type: GlobalActionType.ADD_NEW_PET,
         });
@@ -179,17 +258,68 @@ export function PetsProvider({ children }: { children: ReactNode }) {
         handleOpenMessageModal();
 
         setTimeout(() => {
+          handleCloseMessageModal();
           router.push("/my-pets");
         }, 3000);
       } else {
         console.error("Invalid API response format:", response.data);
+
+        if (response.data.errors) {
+          // Store the property name and error message for each field
+          const errors = response.data.errors.reduce(
+            (
+              acc: Record<string, string>,
+              error: { propertyName: string; errorMessage: string }
+            ) => {
+              if (!acc[error.propertyName]) {
+                acc[error.propertyName] = error.errorMessage;
+              }
+              return acc;
+            },
+            {}
+          );
+
+          // Set error messages
+          dispatch({
+            type: GlobalActionType.SET_NEW_PET_ERROR_MESSAGES,
+            payload: errors,
+          });
+        }
+
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: "Add new pet failed",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding new pet:", error);
+
+      if (error?.response?.data?.errors) {
+        // Store the property name and error message for each field
+        const errors = error?.response?.data?.errors?.reduce(
+          (
+            acc: Record<string, string>,
+            error: { propertyName: string; errorMessage: string }
+          ) => {
+            if (!acc[error.propertyName]) {
+              acc[error.propertyName] = error.errorMessage;
+            }
+            return acc;
+          },
+          {}
+        );
+
+        if (errors === null) {
+          alert("hello");
+        }
+
+        // Set error messages
+        dispatch({
+          type: GlobalActionType.SET_NEW_PET_ERROR_MESSAGES,
+          payload: errors,
+        });
+      }
+
       dispatch({
         type: GlobalActionType.SET_ERROR,
         payload: "Add new pet failed",
@@ -202,10 +332,15 @@ export function PetsProvider({ children }: { children: ReactNode }) {
   const editPet = async (petId: number) => {
     dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
 
+    // Reset error messages sebelum mengirim request
+    dispatch({
+      type: GlobalActionType.RESET_NEW_PET_ERROR_MESSAGES,
+    });
+
     try {
       const response = await api.put(`/edit-pet/${petId}`, state.newPet);
 
-      if (response.data) {
+      if (!response.data.errors) {
         dispatch({
           type: GlobalActionType.EDIT_PET,
         });
@@ -217,17 +352,64 @@ export function PetsProvider({ children }: { children: ReactNode }) {
         handleOpenMessageModal();
 
         setTimeout(() => {
+          handleCloseMessageModal();
           router.push("/my-pets");
         }, 3000);
       } else {
         console.error("Invalid API response format:", response.data);
+
+        if (response.data.errors) {
+          // Store the property name and error message for each field
+          const errors = response.data.errors.reduce(
+            (
+              acc: Record<string, string>,
+              error: { propertyName: string; errorMessage: string }
+            ) => {
+              if (!acc[error.propertyName]) {
+                acc[error.propertyName] = error.errorMessage;
+              }
+              return acc;
+            },
+            {}
+          );
+
+          // Set error messages
+          dispatch({
+            type: GlobalActionType.SET_NEW_PET_ERROR_MESSAGES,
+            payload: errors,
+          });
+        }
+
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: "Edit pet failed",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating pet:", error);
+
+      if (error?.response?.data?.errors) {
+        // Store the property name and error message for each field
+        const errors = error?.response?.data?.errors?.reduce(
+          (
+            acc: Record<string, string>,
+            error: { propertyName: string; errorMessage: string }
+          ) => {
+            if (!acc[error.propertyName]) {
+              acc[error.propertyName] = error.errorMessage;
+            }
+            return acc;
+          },
+          {}
+        );
+
+        // Set error messages
+        dispatch({
+          type: GlobalActionType.SET_NEW_PET_ERROR_MESSAGES,
+          payload: errors,
+        });
+      }
+
       dispatch({
         type: GlobalActionType.SET_ERROR,
         payload: "Edit pet failed",
@@ -272,9 +454,10 @@ export function PetsProvider({ children }: { children: ReactNode }) {
   };
 
   const fetchOwnerPets = async (ownerId: number) => {
-    try {
-      dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+    dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
+    dispatch({ type: GlobalActionType.SET_ERROR, payload: null });
 
+    try {
       const response = await api.get(`/get-owner-pets/${ownerId}`);
 
       if (response.data && Array.isArray(response.data)) {
@@ -300,6 +483,10 @@ export function PetsProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const isIPet = (item: IPet | IService): item is IPet => {
+    return "species" in item;
+  };
+
   return (
     <PetsContext.Provider
       value={{
@@ -309,16 +496,20 @@ export function PetsProvider({ children }: { children: ReactNode }) {
         pet: state.pet,
         newPet: state.newPet,
         filters: state.filters,
+        petFiltersErrorMessages: state.petFiltersErrorMessages,
+        newPetErrorMessages: state.newPetErrorMessages,
         setFilters,
         resetFilters,
         fetchPets,
         fetchSpecies,
         fetchPetDetail,
         setNewPet,
+        resetNewPet,
         addNewPet,
         editPet,
         removePet,
         fetchOwnerPets,
+        isIPet,
         loading: state.loading,
         error: state.error,
       }}

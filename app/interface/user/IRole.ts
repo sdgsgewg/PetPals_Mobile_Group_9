@@ -1,4 +1,6 @@
-export interface IRole {
-  roleId: number;
+interface IRole {
+  id: number;
   name: string;
 }
+
+export default IRole;

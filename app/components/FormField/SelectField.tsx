@@ -1,60 +1,107 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Platform } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+
+interface Option {
+  id: number;
+  name: string;
+}
 
 interface SelectFieldProps {
   label: string;
   name: string;
   value: string | number;
-  onChange: (value: string) => void;
-  options: { label: string; value: string | number }[];
-  error: string;
+  onChange: (name: string, value: string | number) => void;
+  options: Option[];
+  error?: string;
+  isDisabled?: boolean;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
   label,
+  name,
   value,
   onChange,
   options,
   error,
+  isDisabled,
 }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <Picker
-        selectedValue={String(value)}
-        onValueChange={(itemValue) => onChange(itemValue)} 
-        style={styles.picker}
+      <View
+        style={[
+          styles.pickerWrapper,
+          isDisabled && styles.disabled,
+          error && styles.errorBorder,
+        ]}
       >
-        <Picker.Item label="Select an option..." value="" />
-        {options.map((option) => (
+        <Picker
+          selectedValue={value}
+          enabled={!isDisabled}
+          style={[styles.picker, isDisabled && styles.disabledText]}
+          onValueChange={(itemValue) => onChange(name, itemValue)}
+          dropdownIconColor={Platform.OS === "android" ? "#6B7280" : undefined} // Optional: icon color for Android
+        >
           <Picker.Item
-            key={option.value}
-            label={option.label.toString()}
-            value={String(option.value)}
+            label={
+              name === "species" || name === "categoryName"
+                ? "All"
+                : `Select a ${label}`
+            }
+            value={name === "species" || name === "categoryName" ? "" : "0"}
           />
-        ))}
-      </Picker>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+          {options.map((option) => (
+            <Picker.Item
+              key={option.id}
+              label={option.name}
+              value={
+                name === "species" || name === "categoryName"
+                  ? option.name
+                  : option.id
+              }
+            />
+          ))}
+        </Picker>
+      </View>
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
+    width: "100%",
+    marginBottom: 15,
   },
   label: {
-    fontSize: 16,
-    fontWeight: "bold",
+    color: "#4B5563", // gray-600
+    fontWeight: "600",
+    marginBottom: 5,
+  },
+  pickerWrapper: {
+    borderColor: "#D1D5DB",
+    borderWidth: 1,
+    borderRadius: 8,
+    overflow: "hidden",
+    backgroundColor: "#FFFFFF",
   },
   picker: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
+    color: "#111827", // gray-900
+    backgroundColor: "#FFFFFF",
   },
-  error: {
-    color: "red",
+  disabled: {
+    backgroundColor: "#F3F4F6", // gray-100
+    borderColor: "#D1D5DB",
+  },
+  disabledText: {
+    color: "#9CA3AF", // gray-400
+  },
+  errorBorder: {
+    borderColor: "#EF4444", // red-500
+  },
+  errorText: {
+    color: "#EF4444",
     fontSize: 12,
     marginTop: 4,
   },

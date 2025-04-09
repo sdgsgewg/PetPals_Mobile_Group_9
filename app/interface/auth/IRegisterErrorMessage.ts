@@ -1,9 +1,11 @@
-export interface IRegisterErrorMessage {
+interface IRegisterErrorMessage {
   Name: string;
   Email: string;
   Password: string;
   Phone: string;
   Address: string;
   City: string;
-  RoleId: number;
+  RoleId: string;
 }
+
+export default IRegisterErrorMessage;

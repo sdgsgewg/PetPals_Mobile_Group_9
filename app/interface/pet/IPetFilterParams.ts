@@ -1,4 +1,4 @@
-export interface IPetFilterParams {
+interface IPetFilterParams {
   searchValue: string; // name or breed
   species: string;
   minAge: string;
@@ -6,3 +6,5 @@ export interface IPetFilterParams {
   minPrice: string;
   maxPrice: string;
 }
+
+export default IPetFilterParams;

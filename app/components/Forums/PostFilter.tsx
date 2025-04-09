@@ -59,19 +59,17 @@ const PostFilter = () => {
 
           {forumCategories.map((category) => (
             <TouchableOpacity
-              key={category.forumCategoryId}
+              key={category.id}
               style={[
                 styles.button,
-                forumCategoryId === category.forumCategoryId &&
-                  styles.selectedButton,
+                forumCategoryId === category.id && styles.selectedButton,
               ]}
-              onPress={() => setForumCategoryId(category.forumCategoryId)}
+              onPress={() => setForumCategoryId(category.id)}
             >
               <Text
                 style={[
                   styles.buttonText,
-                  forumCategoryId === category.forumCategoryId &&
-                    styles.selectedButtonText,
+                  forumCategoryId === category.id && styles.selectedButtonText,
                 ]}
               >
                 {getCategoryName(category.name)}

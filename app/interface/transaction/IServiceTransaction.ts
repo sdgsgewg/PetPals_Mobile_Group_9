@@ -1,7 +1,7 @@
-import { IService } from "../service/IService";
-import { IUser } from "../user/IUser";
+import IService from "../service/IService";
+import IUser from "../user/IUser";
 
-export interface IServiceTransaction {
+interface IServiceTransaction {
   transaction_id: number;
   adopter_id: number;
   provider_id: number;
@@ -14,3 +14,5 @@ export interface IServiceTransaction {
   provider: IUser;
   service: IService;
 }
+
+export default IServiceTransaction;

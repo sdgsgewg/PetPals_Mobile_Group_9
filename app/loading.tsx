@@ -1,25 +1,59 @@
 import React from "react";
-import { View, ActivityIndicator, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, Modal } from "react-native";
 
 const Loading = () => {
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#2563eb" />
-      <Text style={styles.text}>Loading...</Text>
-    </View>
+    <Modal transparent animationType="fade" visible>
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          <ActivityIndicator
+            size="large"
+            color="#3b82f6"
+            style={styles.spinner}
+          />
+          <Text style={styles.title}>Please wait...</Text>
+          <Text style={styles.subtitle}>
+            We’re preparing something awesome for you.
+          </Text>
+        </View>
+      </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  overlay: {
     flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
     justifyContent: "center",
     alignItems: "center",
   },
-  text: {
-    marginTop: 16,
-    fontSize: 20,
-    color: "#4B5563",
+  container: {
+    backgroundColor: "#fff",
+    paddingVertical: 24,
+    paddingHorizontal: 32,
+    borderRadius: 20,
+    width: "80%",
+    alignItems: "center",
+    elevation: 10, // Android shadow
+    shadowColor: "#000", // iOS shadow
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+  },
+  spinner: {
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1f2937",
+  },
+  subtitle: {
+    marginTop: 6,
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
   },
 });
 

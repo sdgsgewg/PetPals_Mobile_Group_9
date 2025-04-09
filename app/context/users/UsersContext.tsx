@@ -7,16 +7,17 @@ import {
   useEffect,
   useReducer,
 } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/lib/apiClient";
-import { IUser } from "@/app/interface/user/IUser";
-import { IRole } from "@/app/interface/user/IRole";
+import IUser from "@/app/interface/user/IUser";
+import IRole from "@/app/interface/user/IRole";
 import { initialState, UsersReducer } from "./UsersReducer";
 import { GlobalActionType } from "../GlobalActions";
-import { IUserRegister } from "@/app/interface/auth/IUserRegister";
-import { IUserLogin } from "@/app/interface/auth/IUserLogin";
+import IUserRegister from "@/app/interface/auth/IUserRegister";
+import IUserLogin from "@/app/interface/auth/IUserLogin";
 import { useRouter } from "expo-router";
-import { IRegisterErrorMessage } from "@/app/interface/auth/IRegisterErrorMessage";
+import IRegisterErrorMessage from "@/app/interface/auth/IRegisterErrorMessage";
+import ILoginErrorMessage from "@/app/interface/auth/ILoginErrorMessage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface UsersContextType {
   user: IUser;
@@ -26,12 +27,13 @@ interface UsersContextType {
   roles: IRole[];
   isLoggedIn: boolean;
   registerErrorMessages: IRegisterErrorMessage;
+  loginErrorMessages: ILoginErrorMessage;
   fetchRoles: () => Promise<void>;
   setUserRegister: (name: string, value: string) => void;
   registerUser: () => Promise<void>;
   setUserLogin: (name: string, value: string) => void;
   loginUser: () => Promise<void>;
-  logoutUser: () => void;
+  logoutUser: () => Promise<void>;
   loading: boolean;
   error: string | null;
 }
@@ -40,6 +42,7 @@ const UsersContext = createContext<UsersContextType | undefined>(undefined);
 
 export function UsersProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(UsersReducer, initialState);
+
   const router = useRouter();
 
   const fetchRoles = async () => {
@@ -59,12 +62,14 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           payload: response.data,
         });
       } else {
+        console.error("Invalid API response format:", response.data);
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: response?.data?.message || "Registration failed",
         });
       }
     } catch (error) {
+      console.error("Error fetching user roles:", error);
       dispatch({
         type: GlobalActionType.SET_ERROR,
         payload: "Fetch Role failed",
@@ -83,24 +88,34 @@ export function UsersProvider({ children }: { children: ReactNode }) {
 
   const registerUser = async () => {
     dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
-    dispatch({ type: GlobalActionType.RESET_REGISTER_ERROR_MESSAGES });
+
+    // Reset error messages sebelum mengirim request
+    dispatch({
+      type: GlobalActionType.RESET_REGISTER_ERROR_MESSAGES,
+    });
 
     try {
       const response = await api.post("/register-petpals", state.userRegister);
 
       if (!response.data.errors) {
-        alert("Registration successful");
+        dispatch({
+          type: GlobalActionType.RESET_USER_REGISTER,
+        });
 
-        dispatch({ type: GlobalActionType.RESET_USER_REGISTER });
+        alert("Registration successful");
         router.push("/auth/login");
       } else {
+        console.error("Invalid API response format:", response.data);
+
         if (response.data.errors) {
           const errors = response.data.errors.reduce(
             (
               acc: Record<string, string>,
               error: { propertyName: string; errorMessage: string }
             ) => {
-              acc[error.propertyName] = error.errorMessage;
+              if (!acc[error.propertyName]) {
+                acc[error.propertyName] = error.errorMessage;
+              }
               return acc;
             },
             {}
@@ -118,13 +133,17 @@ export function UsersProvider({ children }: { children: ReactNode }) {
         });
       }
     } catch (error: any) {
+      console.error("Error register user:", error?.response?.data);
+
       if (error?.response?.data?.errors) {
-        const errors = error.response.data.errors.reduce(
+        const errors = error?.response?.data?.errors?.reduce(
           (
             acc: Record<string, string>,
-            err: { propertyName: string; errorMessage: string }
+            error: { propertyName: string; errorMessage: string }
           ) => {
-            acc[err.propertyName] = err.errorMessage;
+            if (!acc[error.propertyName]) {
+              acc[error.propertyName] = error.errorMessage;
+            }
             return acc;
           },
           {}
@@ -155,12 +174,15 @@ export function UsersProvider({ children }: { children: ReactNode }) {
   const loginUser = async () => {
     dispatch({ type: GlobalActionType.SET_LOADING, payload: true });
 
+    // Reset error messages sebelum mengirim request
+    dispatch({
+      type: GlobalActionType.RESET_LOGIN_ERROR_MESSAGES,
+    });
+
     try {
       const response = await api.post("/login-petpals", state.userLogin);
 
-      if (response.data) {
-        alert("Login successful");
-
+      if (!response.data.errors && response.data.token && response.data.user) {
         const token = response.data.token;
         const userData = response.data.user;
 
@@ -172,24 +194,73 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           payload: userData,
         });
 
-        dispatch({ type: GlobalActionType.RESET_USER_LOGIN });
+        dispatch({
+          type: GlobalActionType.RESET_USER_LOGIN,
+        });
 
         dispatch({
           type: GlobalActionType.SET_LOGGED_IN,
           payload: true,
         });
 
+        alert("Login successful");
         router.push("/");
       } else {
+        console.error("Invalid API response format:", response.data);
+
+        if (response.data.errors) {
+          const errors = response.data.errors.reduce(
+            (
+              acc: Record<string, string>,
+              error: { propertyName: string; errorMessage: string }
+            ) => {
+              if (!acc[error.propertyName]) {
+                acc[error.propertyName] = error.errorMessage;
+              }
+              return acc;
+            },
+            {}
+          );
+
+          dispatch({
+            type: GlobalActionType.SET_LOGIN_ERROR_MESSAGES,
+            payload: errors,
+          });
+        }
+
         alert("Login Failed");
         dispatch({
           type: GlobalActionType.SET_ERROR,
           payload: "Login failed",
         });
       }
-    } catch (error) {
-      console.error("Error login user:", error);
-      alert("Login Failed");
+    } catch (error: any) {
+      console.error("Error login user:", error?.response?.data);
+
+      if (error?.response?.data?.errors) {
+        const errors = error?.response?.data?.errors?.reduce(
+          (
+            acc: Record<string, string>,
+            error: { propertyName: string; errorMessage: string }
+          ) => {
+            if (!acc[error.propertyName]) {
+              acc[error.propertyName] = error.errorMessage;
+            }
+            return acc;
+          },
+          {}
+        );
+
+        dispatch({
+          type: GlobalActionType.SET_LOGIN_ERROR_MESSAGES,
+          payload: errors,
+        });
+      }
+
+      if (error?.response?.status === 401) {
+        alert(error?.response?.data?.detail);
+      }
+
       dispatch({
         type: GlobalActionType.SET_ERROR,
         payload: "Login failed",
@@ -200,13 +271,13 @@ export function UsersProvider({ children }: { children: ReactNode }) {
   };
 
   const logoutUser = async () => {
-    await AsyncStorage.removeItem("token");
-    await AsyncStorage.removeItem("loggedInUser");
-
     dispatch({
       type: GlobalActionType.SET_LOGGED_IN,
       payload: false,
     });
+
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("loggedInUser");
 
     dispatch({
       type: GlobalActionType.LOGOUT_USER,
@@ -214,7 +285,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const restoreUser = async () => {
+    const loadStoredUser = async () => {
       const storedUser = await AsyncStorage.getItem("loggedInUser");
       if (storedUser) {
         dispatch({
@@ -228,7 +299,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    restoreUser();
+    loadStoredUser();
   }, []);
 
   return (
@@ -240,6 +311,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
         loggedInUser: state.loggedInUser,
         roles: state.roles,
         registerErrorMessages: state.registerErrorMessages,
+        loginErrorMessages: state.loginErrorMessages,
         fetchRoles,
         setUserRegister,
         registerUser,

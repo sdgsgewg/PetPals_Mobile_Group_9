@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { X } from "lucide-react";
+import { FontAwesome } from "@expo/vector-icons";
 import { usePets } from "@/app/context/pets/PetsContext";
 import { useServices } from "@/app/context/services/ServicesContext";
 import { useGlobal } from "@/app/context/GlobalContext";
@@ -31,6 +31,10 @@ const FilterModal: React.FC<FilterModalProps> = ({ filterType }) => {
     }
   };
 
+  const handleApply = () => {
+    fetchFunction();
+  };
+
   return (
     <Modal
       visible={isFilterModalOpen}
@@ -46,7 +50,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ filterType }) => {
               onPress={handleCloseFilterModal}
               style={styles.closeButton}
             >
-              <X size={28} color="#808080" />
+              <FontAwesome name="close" size={24} color="#808080" />
             </TouchableOpacity>
           </View>
 
@@ -57,13 +61,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ filterType }) => {
             <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
               <Text style={styles.buttonText}>Reset</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.applyButton}
-              onPress={() => {
-                fetchFunction();
-                handleCloseFilterModal();
-              }}
-            >
+            <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
               <Text style={styles.buttonText}>Apply</Text>
             </TouchableOpacity>
           </View>
@@ -90,6 +88,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
     paddingBottom: 10,
@@ -106,7 +105,8 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "center",
+    gap: 20,
     marginTop: 20,
   },
   resetButton: {

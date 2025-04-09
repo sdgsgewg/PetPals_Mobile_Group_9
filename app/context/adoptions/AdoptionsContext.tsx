@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext, useReducer } from "react";
 import api from "@/lib/apiClient";
 import { GlobalActionType } from "../GlobalActions";
 import { AdoptionsReducer, initialState } from "./AdoptionsReducer";
-import { IAdoptionTransaction } from "@/app/interface/transaction/IAdoptionTransaction";
+import IAdoptionTransaction from "@/app/interface/transaction/IAdoptionTransaction";
 import { useGlobal } from "../GlobalContext";
 
 interface AdoptionsContextType {

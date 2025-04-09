@@ -1,6 +1,6 @@
-import { IUser } from "../user/IUser";
+import IUser from "../user/IUser";
 
-export interface IForumComment {
+interface IForumComment {
   forumCommentId: number;
   postId: number;
   userId: number;
@@ -8,3 +8,5 @@ export interface IForumComment {
   createdAt: string;
   user: IUser;
 }
+
+export default IForumComment;

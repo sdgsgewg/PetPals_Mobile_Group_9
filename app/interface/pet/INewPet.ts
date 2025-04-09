@@ -1,4 +1,4 @@
-export interface INewPet {
+interface INewPet {
   petId?: number;
   name: string;
   breed: string;
@@ -10,3 +10,5 @@ export interface INewPet {
   imageUrl?: string;
   ownerId: number;
 }
+
+export default INewPet;

@@ -3,19 +3,21 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import { Eye, EyeOff } from "lucide-react-native";
 
 interface InputFieldProps {
   label: string;
   name: string;
-  type?: "text" | "password"; // restrict input types for clarity
+  type?: string;
   placeholder: string;
   value: string | number;
-  onChange: (value: string) => void;
+  onChange: (name: string, value: string) => void;
   error?: string;
+  step?: string | number;
+  isDisabled?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -26,77 +28,98 @@ const InputField: React.FC<InputFieldProps> = ({
   value,
   onChange,
   error,
+  step,
+  isDisabled,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (text: string) => {
-    onChange(text);
-  };
+  const isPasswordType = type === "password";
 
   return (
-    <View style={styles.container}>
+    <View style={styles.wrapper}>
       <Text style={styles.label}>{label}</Text>
-      <View style={[styles.inputContainer, error && styles.inputContainerError]}>
+
+      {label === "Age" && (
+        <Text style={styles.hint}>
+          Please input 0.X if your pet age is below 1 (Ex: 0.5 equals 5 months).
+        </Text>
+      )}
+
+      <View style={styles.inputWrapper}>
         <TextInput
+          editable={!isDisabled}
           placeholder={placeholder}
-          secureTextEntry={type === "password" && !showPassword}
-          style={styles.input}
+          secureTextEntry={isPasswordType && !showPassword}
+          keyboardType={type === "number" ? "numeric" : "default"}
           value={String(value)}
-          onChangeText={handleChange}
-          autoCapitalize="none"
+          onChangeText={(text) => onChange(name, text)}
+          style={[
+            styles.input,
+            isDisabled && styles.disabled,
+            error && styles.errorBorder,
+          ]}
         />
-        {type === "password" && (
+
+        {isPasswordType && (
           <TouchableOpacity
-            style={styles.icon}
             onPress={() => setShowPassword((prev) => !prev)}
+            style={styles.icon}
           >
-            {showPassword ? (
-              <EyeOff size={20} color="#6B7280" />
-            ) : (
-              <Eye size={20} color="#6B7280" />
-            )}
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </TouchableOpacity>
         )}
       </View>
-      {!!error && <Text style={styles.errorText}>{error}</Text>}
+
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     marginBottom: 16,
   },
   label: {
-    color: "#374151",
+    color: "#4B5563", // gray-600
     fontWeight: "600",
-    fontSize: 14,
-    marginBottom: 4,
   },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    height: 44,
+  hint: {
+    color: "#6B7280", // slate-500
+    fontSize: 12,
+    fontStyle: "italic",
+    marginVertical: 4,
   },
-  inputContainerError: {
-    borderColor: "#EF4444",
+  inputWrapper: {
+    position: "relative",
+    marginTop: 4,
   },
   input: {
-    flex: 1,
-    fontSize: 16,
-    color: "#111827",
+    width: "100%",
+    borderColor: "#D1D5DB",
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    paddingRight: 40,
+    backgroundColor: "#FFFFFF",
+    color: "#333333",
   },
   icon: {
-    paddingLeft: 8,
+    position: "absolute",
+    right: 10,
+    top: "50%",
+    transform: [{ translateY: -12 }],
   },
   errorText: {
     color: "#EF4444",
     fontSize: 12,
     marginTop: 4,
+  },
+  errorBorder: {
+    borderColor: "#EF4444",
+  },
+  disabled: {
+    backgroundColor: "#F3F4F6",
+    color: "#9CA3AF",
   },
 });
 

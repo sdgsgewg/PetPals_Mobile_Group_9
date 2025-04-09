@@ -1,4 +1,4 @@
-import { IService } from "@/app/interface/service/IService";
+import IService from "@/app/interface/service/IService";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
@@ -36,7 +36,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
         />
       </View>
       <View style={styles.infoContainer}>
-        <View>
+        <View style={styles.infoTop}>
           <Text style={styles.categoryText}>{service?.category?.name}</Text>
           <Text style={styles.nameText}>{service.name}</Text>
           <View style={styles.locationContainer}>
@@ -47,11 +47,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
             />
             <Text style={styles.cityText}>{service.city}</Text>
           </View>
-
-          <Text style={styles.priceText}>
-            {"Rp " + formattedPrice(service.price)}
-          </Text>
         </View>
+        <Text style={styles.priceText}>
+          {"Rp " + formattedPrice(service.price)}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -68,10 +67,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     marginBottom: 10,
+    flex: 1,
   },
   imageContainer: {
     width: "100%",
-    height: 180,
+    height: 140,
     overflow: "hidden",
   },
   image: {
@@ -81,6 +81,12 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     padding: 12,
+    flexGrow: 1,
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  infoTop: {
+    marginBottom: 8,
   },
   categoryText: {
     fontSize: 12,
@@ -109,6 +115,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#475569",
+    marginTop: "auto",
   },
 });
 

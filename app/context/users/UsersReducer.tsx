@@ -1,10 +1,10 @@
-// UserReducer.ts
-import { IRole } from "@/app/interface/user/IRole";
-import { IUser } from "@/app/interface/user/IUser";
+import IRole from "@/app/interface/user/IRole";
+import IUser from "@/app/interface/user/IUser";
 import { GlobalAction, GlobalActionType } from "../GlobalActions";
-import { IUserRegister } from "@/app/interface/auth/IUserRegister";
-import { IUserLogin } from "@/app/interface/auth/IUserLogin";
-import { IRegisterErrorMessage } from "@/app/interface/auth/IRegisterErrorMessage";
+import IUserRegister from "@/app/interface/auth/IUserRegister";
+import IUserLogin from "@/app/interface/auth/IUserLogin";
+import IRegisterErrorMessage from "@/app/interface/auth/IRegisterErrorMessage";
+import ILoginErrorMessage from "@/app/interface/auth/ILoginErrorMessage";
 
 export interface UserState {
   user: IUser;
@@ -14,6 +14,7 @@ export interface UserState {
   roles: IRole[];
   isLoggedIn: boolean;
   registerErrorMessages: IRegisterErrorMessage;
+  loginErrorMessages: ILoginErrorMessage;
   loading: boolean;
   error: string | null;
 }
@@ -34,11 +35,15 @@ export const initialState: UserState = {
     Phone: "",
     Address: "",
     City: "",
-    RoleId: 0,
+    RoleId: "",
+  },
+  loginErrorMessages: {
+    Email: "",
+    Password: "",
   },
 };
 
- export function UsersReducer(state: UserState, action: GlobalAction): UserState {
+export function UsersReducer(state: UserState, action: GlobalAction) {
   switch (action.type) {
     case GlobalActionType.SET_USER_REGISTER:
       return {
@@ -51,7 +56,15 @@ export const initialState: UserState = {
     case GlobalActionType.RESET_USER_REGISTER:
       return {
         ...state,
-        userRegister: initialState.userRegister,
+        userRegister: {
+          name: "",
+          email: "",
+          password: "",
+          phone: "",
+          address: "",
+          city: "",
+          roleId: 0,
+        },
       };
     case GlobalActionType.SET_USER_LOGIN:
       return {
@@ -64,7 +77,10 @@ export const initialState: UserState = {
     case GlobalActionType.RESET_USER_LOGIN:
       return {
         ...state,
-        userLogin: initialState.userLogin,
+        userLogin: {
+          email: "",
+          password: "",
+        },
       };
     case GlobalActionType.LOGIN_USER:
       return {
@@ -91,7 +107,31 @@ export const initialState: UserState = {
     case GlobalActionType.RESET_REGISTER_ERROR_MESSAGES:
       return {
         ...state,
-        registerErrorMessages: initialState.registerErrorMessages,
+        registerErrorMessages: {
+          Name: "",
+          Email: "",
+          Password: "",
+          Phone: "",
+          Address: "",
+          City: "",
+          RoleId: "",
+        },
+      };
+    case GlobalActionType.SET_LOGIN_ERROR_MESSAGES:
+      return {
+        ...state,
+        loginErrorMessages: {
+          ...state.loginErrorMessages,
+          ...action.payload,
+        },
+      };
+    case GlobalActionType.RESET_LOGIN_ERROR_MESSAGES:
+      return {
+        ...state,
+        loginErrorMessages: {
+          Email: "",
+          Password: "",
+        },
       };
     case GlobalActionType.GET_LOGGED_IN_USER:
       return {
@@ -113,5 +153,3 @@ export const initialState: UserState = {
       return state;
   }
 }
-
-export default UsersReducer;

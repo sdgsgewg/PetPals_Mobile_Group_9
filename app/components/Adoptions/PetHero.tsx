@@ -39,7 +39,7 @@ const PetHero = () => {
 
         {/* Search and Filter */}
         <View style={styles.content}>
-          <Text style={[styles.title, { fontSize: isSmallScreen ? 24 : 32 }]}>
+          <Text style={[styles.title, { fontSize: isSmallScreen ? 24 : 30 }]}>
             Find Your Best Pals
           </Text>
           <SearchFilterBox>

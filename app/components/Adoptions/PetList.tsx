@@ -1,16 +1,10 @@
 import React from "react";
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  useWindowDimensions,
-  Platform,
-} from "react-native";
+import { View, FlatList, StyleSheet, useWindowDimensions } from "react-native";
 import PetCard from "./PetCard";
-import { IPet } from "@/app/interface/pet/IPet";
+import IPet from "@/app/interface/pet/IPet";
 import { usePets } from "@/app/context/pets/PetsContext";
-import Loading from "@/app/loading";
 import ItemNotFound from "../ItemNotFound";
+import Loading from "../Loading";
 
 interface PetListProps {
   filteredPets: IPet[];
@@ -42,10 +36,10 @@ const PetList: React.FC<PetListProps> = ({ filteredPets }) => {
             </View>
           )}
           numColumns={isSmallScreen ? 1 : 2}
-          columnWrapperStyle={
-            isSmallScreen ? undefined : styles.row
-          }
+          columnWrapperStyle={isSmallScreen ? undefined : styles.row}
           contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
         />
       ) : (
         <ItemNotFound
@@ -63,7 +57,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   contentContainer: {
-    paddingBottom: 24,
+    paddingBottom: 100,
   },
   row: {
     justifyContent: "space-between",
@@ -71,7 +65,7 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     flex: 1,
-    marginBottom: 16,
+    marginBottom: 8,
   },
 });
 

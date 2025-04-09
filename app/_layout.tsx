@@ -8,12 +8,12 @@ import { Stack, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { Platform } from "react-native"; // ✅ Tambahkan ini
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Providers from "./providers";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -22,7 +22,7 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  const segments = useSegments(); // ✅ Mengambil path segment dari Expo Router
+  const segments = useSegments();
 
   useEffect(() => {
     if (loaded) {
@@ -31,7 +31,6 @@ export default function RootLayout() {
   }, [loaded]);
 
   useEffect(() => {
-    // ✅ Mapping segment ke judul yang sesuai
     const pageTitle: Record<string, string> = {
       "": "Home - Pet Pals",
       adoptions: "Find Your Best Pals - Adoptions",
@@ -39,8 +38,11 @@ export default function RootLayout() {
       profile: "User Profile - Pet Pals",
     };
 
-    const currentSegment = segments[0] || ""; // Ambil segment pertama
-    document.title = pageTitle[currentSegment] || "Pet Pals";
+    const currentSegment = segments[0] || "";
+
+    if (Platform.OS === "web") {
+      document.title = pageTitle[currentSegment] || "Pet Pals";
+    }
   }, [segments]);
 
   if (!loaded) {

@@ -9,7 +9,7 @@ const FilterBox = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={handleOpenFilterModal}>
-        <FontAwesome name="filter" size={20} color="#4A5568" />
+        <FontAwesome name="filter" size={16} color="#4A5568" />
       </TouchableOpacity>
     </View>
   );
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#CBD5E0", // gray-300
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.1,

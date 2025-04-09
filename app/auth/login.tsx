@@ -10,8 +10,12 @@ import {
 } from "react-native";
 import AuthForm from "../components/Authentication/AuthForm";
 import AuthLayout from "./layout";
+import { useUsers } from "../context/users/UsersContext";
+import NormalContent from "../components/ContentTemplate/NormalContent";
+import Loading from "../loading";
 
 const Login = () => {
+  const { loading } = useUsers();
   const { width } = useWindowDimensions();
   const isSmallScreen = width < 400;
 
@@ -29,6 +33,12 @@ const Login = () => {
             ]}
           >
             <AuthForm authType="Login" />
+
+            {loading && (
+              <NormalContent>
+                <Loading />
+              </NormalContent>
+            )}
           </View>
         </AuthLayout>
       </ScrollView>
