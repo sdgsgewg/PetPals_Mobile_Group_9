@@ -16,6 +16,7 @@ import GenderField from "@/app/components/FormField/GenderField";
 import TextareaField from "@/app/components/FormField/TextAreaField";
 import NormalContent from "@/app/components/ContentTemplate/NormalContent";
 import MessageModal from "@/app/components/modals/MessageModal";
+import Loading from "@/app/loading";
 
 const NewPet = () => {
   const { formattedPrice } = useGlobal();
@@ -28,6 +29,7 @@ const NewPet = () => {
     setNewPet,
     resetNewPet,
     addNewPet,
+    loading,
   } = usePets();
 
   const [displayPrice, setDisplayPrice] = useState(
@@ -63,6 +65,14 @@ const NewPet = () => {
   const handleSubmit = () => {
     addNewPet();
   };
+
+  if (loading) {
+    return (
+      <NormalContent>
+        <Loading />
+      </NormalContent>
+    );
+  }
 
   return (
     <NormalContent>

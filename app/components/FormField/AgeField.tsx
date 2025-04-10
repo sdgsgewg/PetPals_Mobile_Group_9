@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet, Platform } from "react-native";
 
 interface AgeFieldProps {
   label?: string;
@@ -19,6 +19,8 @@ const AgeField: React.FC<AgeFieldProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    if (value === undefined || value === null) return;
+
     const parsedYears = Math.floor(value);
     const parsedMonths = Math.round((value - parsedYears) * 12);
 
@@ -28,18 +30,36 @@ const AgeField: React.FC<AgeFieldProps> = ({
     ) {
       setYears(parsedYears.toString());
       setMonths(parsedMonths.toString());
+      setIsInitialized(false); // prevent triggering onChange immediately
+      setTimeout(() => setIsInitialized(true), 0); // delay enable trigger
     }
-
-    setIsInitialized(true);
   }, [value]);
 
   useEffect(() => {
-    if (isInitialized) {
-      const ageDecimal =
-        (parseInt(years) || 0) + ((parseInt(months) || 0) % 12) / 12;
-      onChange(parseFloat(ageDecimal.toFixed(2)));
+    if (!isInitialized) return;
+
+    const yearVal = parseInt(years) || 0;
+    const monthVal = Math.min(parseInt(months) || 0, 11);
+    const ageDecimal = parseFloat((yearVal + monthVal / 12).toFixed(2));
+
+    // Cek apakah ageDecimal berbeda dari value yang ada
+    if (Math.abs(value - ageDecimal) > 0.01) {
+      onChange(ageDecimal);
     }
   }, [years, months]);
+
+  const handleYearChange = (text: string) => {
+    let val = parseInt(text || "0", 10);
+    if (isNaN(val) || val < 0) val = 0;
+    setYears(val.toString());
+  };
+
+  const handleMonthChange = (text: string) => {
+    let val = parseInt(text || "0", 10);
+    if (isNaN(val)) val = 0;
+    val = Math.min(Math.max(val, 0), 11);
+    setMonths(val.toString());
+  };
 
   return (
     <View style={styles.container}>
@@ -48,23 +68,28 @@ const AgeField: React.FC<AgeFieldProps> = ({
         Input the pet's age in years and months.
       </Text>
       <View style={styles.inputGroup}>
-        <TextInput
-          keyboardType="numeric"
-          placeholder="Years"
-          value={years}
-          onChangeText={(text) => setYears(text)}
-          style={styles.input}
-        />
-        <TextInput
-          keyboardType="numeric"
-          placeholder="Months"
-          value={months}
-          onChangeText={(text) => {
-            const val = Math.min(11, parseInt(text) || 0);
-            setMonths(val.toString());
-          }}
-          style={styles.input}
-        />
+        <View style={styles.inputWrapper}>
+          <Text style={styles.subLabel}>Year</Text>
+          <TextInput
+            keyboardType="numeric"
+            maxLength={2}
+            placeholder="Years"
+            value={years}
+            onChangeText={(text) => handleYearChange(text)}
+            style={styles.input}
+          />
+        </View>
+        <View style={styles.inputWrapper}>
+          <Text style={styles.subLabel}>Month</Text>
+          <TextInput
+            keyboardType="numeric"
+            maxLength={2}
+            placeholder="Months"
+            value={months}
+            onChangeText={(text) => handleMonthChange(text)}
+            style={styles.input}
+          />
+        </View>
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
@@ -77,30 +102,38 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "600",
-    color: "#4B5563",
+    color: "#4B5563", // Tailwind gray-600
     marginBottom: 4,
   },
   helperText: {
-    color: "#6B7280",
+    color: "#6B7280", // Tailwind slate-500
     fontStyle: "italic",
     fontSize: 12,
     marginBottom: 8,
   },
   inputGroup: {
     flexDirection: "row",
-    gap: 8,
+    justifyContent: "space-between",
+    gap: 16,
+  },
+  inputWrapper: {
+    flex: 1,
+  },
+  subLabel: {
+    fontWeight: "600",
+    color: "#4B5563",
+    marginBottom: 4,
   },
   input: {
-    flex: 1,
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: "#D1D5DB", // Tailwind gray-300
     borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    color: "#111827",
+    paddingVertical: Platform.OS === "ios" ? 10 : 8,
+    color: "#111827", // Tailwind gray-900
   },
   errorText: {
-    color: "#EF4444",
+    color: "#EF4444", // Tailwind red-500
     fontSize: 12,
     marginTop: 4,
   },

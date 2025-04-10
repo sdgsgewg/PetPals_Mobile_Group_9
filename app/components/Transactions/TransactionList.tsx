@@ -39,8 +39,8 @@ const TransactionList: React.FC<TransactionListProps> = ({
         />
       ) : (
         <ItemNotFound
-          image_url="/img/pet-not-found.png"
-          size={200}
+          image_url={require("@/assets/img/transaction-not-found.png")}
+          size={150}
           message="No Transaction Yet"
         />
       )}

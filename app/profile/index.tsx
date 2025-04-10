@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useUsers } from "@/app/context/users/UsersContext";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,6 +6,10 @@ import DataField from "../components/Profile/DataField";
 
 const Profile = () => {
   const { loggedInUser } = useUsers();
+
+  useEffect(() => {
+    if (!loggedInUser) return;
+  }, [loggedInUser]);
 
   return (
     <SafeAreaView style={styles.safeArea}>

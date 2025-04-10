@@ -11,10 +11,11 @@ import { usePets } from "@/app/context/pets/PetsContext";
 import { useUsers } from "@/app/context/users/UsersContext";
 import IPet from "@/app/interface/pet/IPet";
 import { useRouter } from "expo-router";
+import Loading from "../loading";
 
 const MyPets = () => {
   const { loggedInUser } = useUsers();
-  const { ownerPets, fetchOwnerPets, error } = usePets();
+  const { ownerPets, fetchOwnerPets, loading, error } = usePets();
 
   const router = useRouter();
 
@@ -42,6 +43,14 @@ const MyPets = () => {
       fetchOwnerPets(loggedInUser.userId);
     }
   }, [loggedInUser]);
+
+  if (loading) {
+    return (
+      <NormalContent>
+        <Loading />
+      </NormalContent>
+    );
+  }
 
   if (error) {
     return (
@@ -84,6 +93,5 @@ export default MyPets;
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    marginBottom: 200,
   },
 });

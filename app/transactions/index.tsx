@@ -6,14 +6,32 @@ import PageNotFound from "@/app/components/PageNotFound";
 import TransactionFilter from "@/app/components/Transactions/TransactionFilter";
 import TransactionList from "@/app/components/Transactions/TransactionList";
 import NormalContent from "../components/ContentTemplate/NormalContent";
+import { useRouter } from "expo-router";
 
 const Transactions = () => {
   const { loggedInUser } = useUsers();
   const { transactionType, fetchTransactionHistory, error } = useTransactions();
 
+  const router = useRouter();
+
   useEffect(() => {
-    fetchTransactionHistory(loggedInUser.userId, transactionType);
-  }, []);
+    if (!loggedInUser) return;
+
+    const role = loggedInUser.role?.name?.toLowerCase();
+
+    if (role === "owner") {
+      router.push("/transactions/owner");
+    } else if (role === "provider") {
+      router.push("/transactions/provider");
+    }
+  }, [loggedInUser]);
+
+  useEffect(() => {
+    const role = loggedInUser?.role?.name?.toLowerCase();
+    if (role === "adopter") {
+      fetchTransactionHistory(loggedInUser.userId, transactionType);
+    }
+  }, [loggedInUser]);
 
   useEffect(() => {
     fetchTransactionHistory(loggedInUser.userId, transactionType);

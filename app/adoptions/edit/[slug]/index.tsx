@@ -15,6 +15,7 @@ import MessageModal from "@/app/components/modals/MessageModal";
 import InputField from "@/app/components/FormField/InputField";
 import SelectField from "@/app/components/FormField/SelectField";
 import TextareaField from "@/app/components/FormField/TextAreaField";
+import Loading from "@/app/loading";
 
 const EditPet = () => {
   const router = useRouter();
@@ -30,6 +31,7 @@ const EditPet = () => {
     fetchPetDetail,
     setNewPet,
     editPet,
+    loading,
   } = usePets();
 
   const [displayPrice, setDisplayPrice] = useState<string>(
@@ -37,11 +39,13 @@ const EditPet = () => {
   );
 
   useEffect(() => {
+    if (!slug) return;
     fetchSpecies();
     fetchPetDetail(slug);
   }, [slug]);
 
   useEffect(() => {
+    if (!pet || pet === null || pet === undefined) return;
     setNewPet("petId", pet.petId);
     setNewPet("name", pet.name);
     setNewPet("breed", pet.breed);
@@ -71,6 +75,14 @@ const EditPet = () => {
   const handleSubmit = () => {
     editPet(pet.petId);
   };
+
+  if (loading) {
+    return (
+      <NormalContent>
+        <Loading />
+      </NormalContent>
+    );
+  }
 
   return (
     <NormalContent>

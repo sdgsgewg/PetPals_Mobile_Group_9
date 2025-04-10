@@ -35,11 +35,13 @@ const EditService = () => {
   );
 
   useEffect(() => {
+    if (!slug) return;
     fetchServiceCategories();
     fetchServiceDetail(slug);
-  }, []);
+  }, [slug]);
 
   useEffect(() => {
+    if (!service) return;
     setNewService("serviceId", service.serviceId);
     setNewService("name", service.name);
     setNewService("categoryId", service?.category?.id);

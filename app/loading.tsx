@@ -11,10 +11,7 @@ const Loading = () => {
             color="#3b82f6"
             style={styles.spinner}
           />
-          <Text style={styles.title}>Please wait...</Text>
-          <Text style={styles.subtitle}>
-            We’re preparing something awesome for you.
-          </Text>
+          <Text style={styles.title}>Loading...</Text>
         </View>
       </View>
     </Modal>
