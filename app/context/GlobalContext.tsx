@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useReducer } from "react";
 import { GlobalReducer, initialState } from "./GlobalReducer";
 import { GlobalActionType } from "./GlobalActions";
+import { breedImages, serviceImages } from "../utils/imageMapping";
 
 interface GlobalContextType {
   isMessageModalOpen: boolean;
@@ -53,21 +54,15 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
 
   const getImageUrlByBreed = (species: string, breed: string) => {
     if (!species || !breed) return null;
-    const modifiedSpecies = species?.toLowerCase();
-    const modifiedBreed = breed
-      ?.split(" ")
-      .map((word) => word.toLowerCase())
-      .join("-");
-    return `/img/breed/${modifiedSpecies}/${modifiedBreed}.jpg`;
+    const key =
+      species.toLowerCase() + "/" + breed.toLowerCase().split(" ").join("-");
+    return breedImages[key] ?? null;
   };
 
   const getImageUrlByServiceCategory = (categoryName: string) => {
     if (!categoryName) return null;
-    const modifiedCategoryName = categoryName
-      ?.split(" ")
-      .map((word) => word.toLowerCase())
-      .join("-");
-    return `/img/services/${modifiedCategoryName}.jpg`;
+    const key = categoryName.toLowerCase().split(" ").join("-");
+    return serviceImages[key] ?? null;
   };
 
   const formattedAge = (age: number) => {

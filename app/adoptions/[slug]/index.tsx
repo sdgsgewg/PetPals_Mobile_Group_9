@@ -1,43 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import { usePets } from "../context/pets/PetsContext";
-import { useAdoptions } from "../context/adoptions/AdoptionsContext";
-import { useUsers } from "../context/users/UsersContext";
-import { useGlobal } from "../context/GlobalContext";
-import NormalContent from "../components/ContentTemplate/NormalContent";
-import Loading from "../loading";
-import PageNotFound from "../components/PageNotFound";
-import ItemDetailCard from "../components/Cards/ItemDetailCard";
-import ContactPersonCard from "../components/Cards/ContactPersonCard";
-import MessageModal from "../components/modals/MessageModal";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  ImageSourcePropType,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useGlobal } from "@/app/context/GlobalContext";
+import { useUsers } from "@/app/context/users/UsersContext";
+import { usePets } from "@/app/context/pets/PetsContext";
+import { useAdoptions } from "@/app/context/adoptions/AdoptionsContext";
+import NormalContent from "@/app/components/ContentTemplate/NormalContent";
+import Loading from "@/app/loading";
+import PageNotFound from "@/app/components/PageNotFound";
+import ItemDetailCard from "@/app/components/Cards/ItemDetailCard";
+import ContactPersonCard from "@/app/components/Cards/ContactPersonCard";
+import MessageModal from "@/app/components/modals/MessageModal";
 
 const PetDetail = () => {
   const router = useRouter();
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
-  const { getImageUrlByBreed } = useGlobal();
+  const { getImageUrlByBreed, formattedPrice } = useGlobal();
   const { isLoggedIn, loggedInUser } = useUsers();
   const { pet, fetchPetDetail, loading, error } = usePets();
   const { adoptions, adoptPet } = useAdoptions();
 
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<ImageSourcePropType | null>(null);
   const [price, setPrice] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [isAdopted, setIsAdopted] = useState(false);
 
   useEffect(() => {
-    if (slug) {
-      fetchPetDetail(slug);
-    }
+    if (!slug) return;
+    fetchPetDetail(slug);
   }, [slug]);
 
   useEffect(() => {
-    if (pet) {
-      setImageUrl("@/assets/img/pets.jpg");
-      setPrice(pet.price?.toLocaleString("id-ID") || "0");
-      setStatus(getStatus());
-    }
+    if (!pet) return;
+    setImageUrl(
+      getImageUrlByBreed(pet?.species?.name, pet?.breed) ??
+        require("@/assets/img/pets.jpg")
+    );
+    setPrice(formattedPrice(pet.price));
+    setStatus(getStatus());
   }, [pet]);
 
   useEffect(() => {
@@ -47,36 +53,31 @@ const PetDetail = () => {
   }, [adoptions, pet]);
 
   const handleAdoption = () => {
-    if (!pet || pet.status?.toLowerCase() !== "available") return;
+    if (!pet || !pet.status || pet?.status?.toLowerCase() !== "available")
+      return;
 
     if (!isLoggedIn) {
       router.push("/auth/login");
       return;
     }
 
-    adoptPet(loggedInUser.userId, pet.owner.userId, pet.petId);
+    adoptPet(loggedInUser.userId, pet?.owner?.userId, pet.petId);
     setIsAdopted(true);
   };
 
   const getStatus = () => {
     if (!pet?.status) return "Unknown";
-    return pet.status.charAt(0).toUpperCase() + pet.status.slice(1).toLowerCase();
+    return (
+      pet.status.charAt(0).toUpperCase() + pet.status.slice(1).toLowerCase()
+    );
   };
 
-  if (loading) {
-    return (
-      <NormalContent>
-        <Loading />
-      </NormalContent>
-    );
-  }
-
-  if (error || !pet || Object.keys(pet).length === 0) {
+  if (error) {
     return (
       <NormalContent>
         <PageNotFound
           image_url={require("@/assets/img/page-not-found.png")}
-          message="Pet not found."
+          message=""
         />
       </NormalContent>
     );
@@ -97,7 +98,7 @@ const PetDetail = () => {
 
           {isLoggedIn &&
             loggedInUser?.role?.name?.toLowerCase() === "adopter" && (
-              <ContactPersonCard itemType="pet" data={pet.owner} />
+              <ContactPersonCard itemType="pet" data={pet?.owner} />
             )}
         </View>
 

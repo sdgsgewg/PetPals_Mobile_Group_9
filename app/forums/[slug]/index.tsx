@@ -1,23 +1,25 @@
 import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useForums } from "@/app/context/forums/ForumsContext";
 import PostComments from "@/app/components/Forums/PostComments";
 import AddCommentForm from "@/app/components/Forums/AddCommentForm";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import NormalContent from "../components/ContentTemplate/NormalContent";
-import Loading from "../loading";
-import PageNotFound from "../components/PageNotFound";
+import NormalContent from "@/app/components/ContentTemplate/NormalContent";
+import PageNotFound from "@/app/components/PageNotFound";
+import { Keyboard } from "react-native";
+import { useState } from "react";
 
 const ForumDetail = () => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
-  const { forumPost, fetchForumPostDetail, loading, error } = useForums();
+  const {
+    forumPost,
+    forumComments,
+    fetchForumPostDetail,
+    fetchForumPostComments,
+    loading,
+    error,
+  } = useForums();
 
   useEffect(() => {
     if (!slug) return;
@@ -32,14 +34,6 @@ const ForumDetail = () => {
     });
   };
 
-  //   if (loading) {
-  //     return (
-  //       <NormalContent>
-  //         <Loading />
-  //       </NormalContent>
-  //     );
-  //   }
-
   if (error || !forumPost) {
     return (
       <NormalContent>
@@ -51,20 +45,18 @@ const ForumDetail = () => {
   return (
     <NormalContent>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.card}>
-          <Text style={styles.title}>{forumPost.title}</Text>
-          <Text style={styles.meta}>
-            Oleh <Text style={styles.author}>{forumPost?.user?.name}</Text> •{" "}
-            {formatDate(forumPost.createdAt)}
-          </Text>
+        <Text style={styles.title}>{forumPost.title}</Text>
+        <Text style={styles.meta}>
+          Oleh <Text style={styles.author}>{forumPost?.user?.name}</Text> •{" "}
+          {formatDate(forumPost.createdAt)}
+        </Text>
 
-          <View style={styles.contentBox}>
-            <Text style={styles.contentText}>{forumPost.content}</Text>
-          </View>
-
-          <PostComments />
-          <AddCommentForm />
+        <View style={styles.contentBox}>
+          <Text style={styles.contentText}>{forumPost.content}</Text>
         </View>
+
+        <AddCommentForm />
+        <PostComments />
       </ScrollView>
     </NormalContent>
   );
@@ -74,18 +66,15 @@ export default ForumDetail;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#F9FAFB",
-  },
-  card: {
+    flexGrow: 1,
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 12,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 4,
-    marginBottom: 20,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   title: {
     fontSize: 22,
@@ -105,21 +94,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginTop: 10,
-    marginBottom: 16,
+    marginBottom: 0,
   },
   contentText: {
     color: "#374151",
     fontSize: 16,
     lineHeight: 22,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  errorText: {
-    fontSize: 16,
-    color: "red",
   },
 });

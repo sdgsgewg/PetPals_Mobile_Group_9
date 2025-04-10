@@ -11,7 +11,7 @@ const LoginInputField = () => {
   };
 
   return (
-    <View style={styles.wrapper}>
+    <View style={styles.inputContainer}>
       <InputField
         label="Email"
         name="email"
@@ -36,26 +36,8 @@ const LoginInputField = () => {
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
   inputContainer: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 6,
-    fontWeight: "600",
-    color: "#333",
-  },
-  input: {
-    height: Platform.OS === "ios" ? 44 : 48,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: "#fff",
+    marginVertical: 8,
   },
 });
 

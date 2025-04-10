@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import NormalContent from "@/app/components/ContentTemplate/NormalContent";
 import ItemNotFound from "@/app/components/ItemNotFound";
 import Header from "@/app/components/ManageItem/Header";
@@ -85,6 +84,6 @@ export default MyPets;
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    marginBottom: 250,
+    marginBottom: 200,
   },
 });

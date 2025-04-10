@@ -21,6 +21,15 @@ interface TransactionsContextType {
   fetchServiceTransactionDetail: (transactionId: number) => Promise<void>;
   fetchAdoptionTransactionRequest: (ownerId: number) => Promise<void>;
   fetchServiceTransactionRequest: (providerId: number) => Promise<void>;
+  isTransactionHistory: (
+    transaction: ITransaction | IAdoptionTransaction | IServiceTransaction
+  ) => transaction is ITransaction;
+  isAdoptionTransactionRequest: (
+    transaction: ITransaction | IAdoptionTransaction | IServiceTransaction
+  ) => transaction is IAdoptionTransaction;
+  isServiceTransactionRequest: (
+    transaction: ITransaction | IAdoptionTransaction | IServiceTransaction
+  ) => transaction is IServiceTransaction;
   loading: boolean;
   error: string | null;
 }
@@ -239,6 +248,20 @@ export function TransactionsProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Type Guards
+
+  const isTransactionHistory = (
+    transaction: ITransaction | IAdoptionTransaction | IServiceTransaction
+  ): transaction is ITransaction => "item" in transaction;
+
+  const isAdoptionTransactionRequest = (
+    transaction: ITransaction | IAdoptionTransaction | IServiceTransaction
+  ): transaction is IAdoptionTransaction => "pet" in transaction;
+
+  const isServiceTransactionRequest = (
+    transaction: ITransaction | IAdoptionTransaction | IServiceTransaction
+  ): transaction is IServiceTransaction => "service" in transaction;
+
   return (
     <TransactionsContext.Provider
       value={{
@@ -251,6 +274,9 @@ export function TransactionsProvider({ children }: { children: ReactNode }) {
         fetchAdoptionTransactionRequest,
         fetchServiceTransactionRequest,
         setTransactionType,
+        isTransactionHistory,
+        isAdoptionTransactionRequest,
+        isServiceTransactionRequest,
         loading: state.loading,
         error: state.error,
       }}

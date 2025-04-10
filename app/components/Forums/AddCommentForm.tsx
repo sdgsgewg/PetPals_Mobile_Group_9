@@ -2,13 +2,18 @@ import React, { useEffect } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
 import { useForums } from "@/app/context/forums/ForumsContext";
 import { useUsers } from "@/app/context/users/UsersContext";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 const AddCommentForm = () => {
   const { isLoggedIn, loggedInUser } = useUsers();
-  const { forumPost, newForumComment, setNewComment, addForumComment } =
-    useForums();
-  const navigation = useNavigation();
+  const {
+    forumPost,
+    newForumComment,
+    fetchForumPostDetail,
+    setNewComment,
+    addForumComment,
+  } = useForums();
+  const router = useRouter();
 
   useEffect(() => {
     if (
@@ -27,8 +32,7 @@ const AddCommentForm = () => {
 
   const handleAddComment = () => {
     if (!isLoggedIn) {
-      navigation.navigate("Login" as never); // Pastikan 'Login' ada di navigator
-      return;
+      router.push("/auth/login");
     }
 
     if (!newForumComment.comment?.trim()) {

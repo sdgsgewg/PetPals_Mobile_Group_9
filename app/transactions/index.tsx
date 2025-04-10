@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useTransactions } from "@/app/context/transactions/TransactionsContext";
 import { useUsers } from "@/app/context/users/UsersContext";
 import PageNotFound from "@/app/components/PageNotFound";
 import TransactionFilter from "@/app/components/Transactions/TransactionFilter";
 import TransactionList from "@/app/components/Transactions/TransactionList";
+import NormalContent from "../components/ContentTemplate/NormalContent";
 
 const Transactions = () => {
   const { loggedInUser } = useUsers();
@@ -19,28 +20,27 @@ const Transactions = () => {
   }, [transactionType]);
 
   if (error) {
-    return <PageNotFound image_url="/img/page-not-found.png" message="" />;
+    return (
+      <NormalContent>
+        <PageNotFound image_url="/img/page-not-found.png" message="" />
+      </NormalContent>
+    );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <NormalContent>
       <View style={styles.header}>
         <Text style={styles.title}>Transaction History</Text>
       </View>
       <TransactionFilter />
       <TransactionList transactionType="history" />
-    </ScrollView>
+    </NormalContent>
   );
 };
 
 export default Transactions;
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 16,
-    backgroundColor: "#fff",
-  },
   header: {
     borderBottomWidth: 2,
     borderBottomColor: "#ccc",

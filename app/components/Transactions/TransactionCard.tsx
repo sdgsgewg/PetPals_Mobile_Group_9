@@ -1,39 +1,25 @@
 import React, { useState } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ImageSourcePropType,
+} from "react-native";
 import { useGlobal } from "@/app/context/GlobalContext";
-import { IPet } from "@/app/interface/pet/IPet";
-import { IService } from "@/app/interface/service/IService";
-import { IAdoptionTransaction } from "@/app/interface/transaction/IAdoptionTransaction";
-import { IServiceTransaction } from "@/app/interface/transaction/IServiceTransaction";
-import { ITransaction } from "@/app/interface/transaction/ITransaction";
-
-// Type Guards
-const isAdoptionTransaction = (
-  transaction: ITransaction | IAdoptionTransaction | IServiceTransaction
-): transaction is IAdoptionTransaction => "pet" in transaction;
-
-const isServiceTransaction = (
-  transaction: ITransaction | IAdoptionTransaction | IServiceTransaction
-): transaction is IServiceTransaction => "service" in transaction;
-
-const isITransaction = (
-  transaction: ITransaction | IAdoptionTransaction | IServiceTransaction
-): transaction is ITransaction => "item" in transaction;
-
-const isIService = (item: IPet | IService): item is IService =>
-  "category" in item;
+import IAdoptionTransaction from "@/app/interface/transaction/IAdoptionTransaction";
+import IServiceTransaction from "@/app/interface/transaction/IServiceTransaction";
+import ITransaction from "@/app/interface/transaction/ITransaction";
+import { useTransactions } from "@/app/context/transactions/TransactionsContext";
+import { usePets } from "@/app/context/pets/PetsContext";
+import { Router, useRouter } from "expo-router";
+import IService from "@/app/interface/service/IService";
 
 interface TransactionCardProps {
   transactionType: string; // history | adoptionReq | serviceReq
   transaction: ITransaction | IAdoptionTransaction | IServiceTransaction;
 }
-
-// Mapping untuk gambar lokal
-const localImages: Record<string, any> = {
-  pets: require("@/assets/img/pets.jpg"),
-  services: require("@/assets/img/services.jpg"),
-  fallback: require("@/assets/img/pets.jpg"),
-};
 
 const TransactionCard: React.FC<TransactionCardProps> = ({
   transactionType,
@@ -41,64 +27,93 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
 }) => {
   const { getImageUrlByBreed, getImageUrlByServiceCategory, formattedPrice } =
     useGlobal();
+  const {
+    isTransactionHistory,
+    isAdoptionTransactionRequest,
+    isServiceTransactionRequest,
+  } = useTransactions();
+  const { isIPet } = usePets();
 
-  const [fallbackImage, setFallbackImage] = useState(false);
+  const router = useRouter();
 
-  let imageUrl: string | undefined;
-  let localImageKey: "pets" | "services" | null = null;
+  let imageUrl: ImageSourcePropType = require("@/assets/img/pets.jpg");
   let itemName = "";
 
-  // Tentukan image dan nama
-  if (isAdoptionTransaction(transaction)) {
-    localImageKey = "pets";
-    itemName = transaction.pet.name;
-  } else if (isServiceTransaction(transaction)) {
-    localImageKey = "services";
-    itemName = transaction.service.name;
-  } else if (isITransaction(transaction)) {
+  if (isTransactionHistory(transaction)) {
     itemName = transaction.item.name;
-    if (transaction.itemType === "service" && isIService(transaction.item)) {
-      imageUrl = getImageUrlByServiceCategory(transaction.item.category);
+    if (
+      transaction?.transactionType?.toLowerCase() === "adoption" &&
+      isIPet(transaction.item)
+    ) {
+      imageUrl =
+        getImageUrlByBreed(
+          transaction?.item?.species?.name,
+          transaction?.item?.breed
+        ) ?? require("@/assets/img/pets.jpg");
     } else {
-      const pet = transaction.item as IPet;
-      imageUrl = getImageUrlByBreed(pet?.species?.name, pet.breed);
+      const service = transaction.item as IService;
+      imageUrl =
+        getImageUrlByServiceCategory(service?.category?.name) ??
+        require("@/assets/img/services.jpg");
     }
+  } else if (isAdoptionTransactionRequest(transaction)) {
+    imageUrl =
+      getImageUrlByBreed(
+        transaction?.pet?.species?.name,
+        transaction?.pet?.breed
+      ) ?? require("@/assets/img/pets.jpg");
+    itemName = transaction.pet.name;
+  } else if (isServiceTransactionRequest(transaction)) {
+    imageUrl =
+      getImageUrlByServiceCategory(transaction?.service?.category?.name) ??
+      require("@/assets/img/services.jpg");
+    itemName = transaction.service.name;
   }
 
-  const displayImage = () => {
-    if (fallbackImage) return localImages.fallback;
-    if (imageUrl?.startsWith("http")) return { uri: imageUrl };
-    if (localImageKey) return localImages[localImageKey];
-    return localImages.fallback;
+  const goToTransactionDetail = (
+    router: Router,
+    transactionType: string,
+    transactionId: string
+  ) => {
+    router.push({
+      pathname: "/transactions/[transactionType]/[transactionId]",
+      params: { transactionType, transactionId },
+    });
   };
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      onPress={() =>
+        goToTransactionDetail(
+          router,
+          transaction.transactionType.toLowerCase(),
+          transaction.transactionId.toString()
+        )
+      }
+      style={styles.card}
+    >
       <Text style={styles.userText}>
         {transactionType === "history"
-          ? isITransaction(transaction)
-            ? transaction.user.name
+          ? isTransactionHistory(transaction)
+            ? transaction?.user?.name
             : "Unknown"
           : `From ${
-              isAdoptionTransaction(transaction)
-                ? transaction.adopter?.name
+              isAdoptionTransactionRequest(transaction) ||
+              isServiceTransactionRequest(transaction)
+                ? transaction?.adopter?.name
                 : "Unknown"
             }`}
       </Text>
 
       <View style={styles.contentWrapper}>
-        <Image
-          source={displayImage()}
-          style={styles.image}
-          onError={() => setFallbackImage(true)}
-        />
+        <Image source={imageUrl} style={styles.image} />
         <Text style={styles.itemName}>{itemName}</Text>
       </View>
 
       <Text style={styles.price}>{`Rp ${formattedPrice(
         transaction.price
       )}`}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -113,7 +128,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    marginBottom: 16,
   },
   userText: {
     fontWeight: "600",
@@ -121,8 +135,7 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
+    gap: 8,
   },
   image: {
     width: 100,

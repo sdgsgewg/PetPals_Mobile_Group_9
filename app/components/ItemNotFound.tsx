@@ -23,14 +23,16 @@ const ItemNotFound: React.FC<ItemNotFoundProps> = ({
         source={image_url}
         style={{ width: size, height: size, resizeMode: "contain" }}
       />
-      <Text style={[styles.message, { fontSize: dynamicFontSize }]}>{message}</Text>
+      <Text style={[styles.message, { fontSize: dynamicFontSize }]}>
+        {message}
+      </Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: "flex",
     justifyContent: "center",
     alignItems: "center",
     gap: 16,

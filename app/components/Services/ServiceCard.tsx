@@ -1,7 +1,14 @@
 import IService from "@/app/interface/service/IService";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ImageSourcePropType,
+} from "react-native";
 import React from "react";
 import CardLayout from "../Cards/CardLayout";
 import { useGlobal } from "@/app/context/GlobalContext";
@@ -22,6 +29,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
     });
   };
 
+  let imageUrl: ImageSourcePropType =
+    getImageUrlByServiceCategory(service?.category?.name) ??
+    require("@/assets/img/services.jpg");
+
   return (
     <TouchableOpacity
       onPress={() => goToServiceDetail(router, service.slug)}
@@ -29,11 +40,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
     >
       {/* Service Image */}
       <View style={styles.imageContainer}>
-        <Image
-          // source={getImageUrlByServiceCategory(service?.category?.name)}
-          source={require("@/assets/img/services.jpg")}
-          style={styles.image}
-        />
+        <Image source={imageUrl} style={styles.image} />
       </View>
       <View style={styles.infoContainer}>
         <View style={styles.infoTop}>

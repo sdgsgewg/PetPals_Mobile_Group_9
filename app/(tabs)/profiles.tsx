@@ -42,8 +42,11 @@ export default function ProfileScreen() {
     const role = loggedInUser?.role?.name?.toLowerCase();
     if (role === "adopter") {
       router.push("/transactions");
+    } else if (role === "owner") {
+      router.push("/transactions/owner");
+    } else if (role === "provider") {
+      router.push("/transactions/provider");
     }
-    // Future support for owner and provider roles
   };
 
   const goToProfilePage = () => {
@@ -157,8 +160,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 20,
     gap: 12,
-    justifyContent: "center",
-    alignItems: "center",
   },
   button: {
     backgroundColor: "#1E90FF",

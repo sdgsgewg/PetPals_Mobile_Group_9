@@ -34,20 +34,24 @@ const Forums = () => {
 
   const handleClickCreatePost = () => {
     if (isLoggedIn) {
-      router.push("/");
+      router.push("/forums/new");
     } else {
       router.push("/auth/login");
     }
   };
 
   if (error) {
-    return <PageNotFound image_url="/img/page-not-found.png" message="" />;
+    return (
+      <NormalContent>
+        <PageNotFound image_url="/img/page-not-found.png" message="" />
+      </NormalContent>
+    );
   }
 
   return (
     <NormalContent>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Header */}
+      {/* Header */}
+      <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Forum PetPals</Text>
           <TouchableOpacity
@@ -57,11 +61,9 @@ const Forums = () => {
             <Text style={styles.buttonText}>Buat Postingan</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Filter & List */}
         <PostFilter />
         <PostList />
-      </ScrollView>
+      </View>
     </NormalContent>
   );
 };
@@ -70,14 +72,13 @@ export default Forums;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
-    backgroundColor: "#fff",
+    flexGrow: 1,
   },
   header: {
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "flex-start",
-    marginBottom: 24,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,

@@ -18,7 +18,7 @@ import ContactPersonCard from "@/app/components/Cards/ContactPersonCard";
 import ItemDetailCard from "@/app/components/Cards/ItemDetailCard";
 import BookServiceModal from "@/app/components/modals/BookServiceModal";
 import MessageModal from "@/app/components/modals/MessageModal";
-import NormalContent from "../components/ContentTemplate/NormalContent";
+import NormalContent from "@/app/components/ContentTemplate/NormalContent";
 
 const ServiceDetail = () => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -28,7 +28,7 @@ const ServiceDetail = () => {
   const { isLoggedIn, loggedInUser } = useUsers();
   const { service, fetchServiceDetail, loading, error } = useServices();
 
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<ImageSourcePropType | null>(null);
   const [price, setPrice] = useState<string | null>(null);
   const [isBookServiceModalOpen, setIsBookServiceModalOpen] = useState(false);
 
@@ -42,7 +42,10 @@ const ServiceDetail = () => {
 
   useEffect(() => {
     if (service) {
-      setImageUrl(getImageUrlByServiceCategory(service?.category?.name));
+      setImageUrl(
+        getImageUrlByServiceCategory(service?.category?.name) ??
+          require("@/assets/img/services.jpg")
+      );
       setPrice(formattedPrice(service.price));
     }
   }, [service]);

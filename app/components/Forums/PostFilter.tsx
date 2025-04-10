@@ -7,89 +7,78 @@ import {
   ScrollView,
 } from "react-native";
 import { useForums } from "@/app/context/forums/ForumsContext";
-import Loading from "@/app/loading";
+import { useGlobal } from "@/app/context/GlobalContext";
 
 const PostFilter = () => {
+  const { getForumCategoryName } = useGlobal();
   const {
     forumCategories,
     fetchForumCategories,
     setForumCategoryId,
     forumCategoryId,
-    loading,
   } = useForums();
 
   useEffect(() => {
     fetchForumCategories();
   }, []);
 
-  const getCategoryName = (categoryName: string) => {
-    if (!categoryName) return "Unknown";
-    return (
-      categoryName.charAt(0).toUpperCase() + categoryName.slice(1).toLowerCase()
-    );
-  };
-
   return (
-    <>
-      {loading ? (
-        <Loading />
-      ) : (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.container}
-          contentContainerStyle={{ paddingRight: 20 }}
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.container}
+      contentContainerStyle={{ paddingRight: 20 }}
+    >
+      <TouchableOpacity
+        style={[styles.button, forumCategoryId === 0 && styles.selectedButton]}
+        onPress={() => setForumCategoryId(0)}
+      >
+        <Text
+          style={[
+            styles.buttonText,
+            forumCategoryId === 0 && styles.selectedButtonText,
+          ]}
         >
-          <TouchableOpacity
-            style={[
-              styles.button,
-              forumCategoryId === 0 && styles.selectedButton,
-            ]}
-            onPress={() => setForumCategoryId(0)}
-          >
-            <Text
-              style={[
-                styles.buttonText,
-                forumCategoryId === 0 && styles.selectedButtonText,
-              ]}
-            >
-              All
-            </Text>
-          </TouchableOpacity>
+          All
+        </Text>
+      </TouchableOpacity>
 
-          {forumCategories.map((category) => (
-            <TouchableOpacity
-              key={category.id}
-              style={[
-                styles.button,
-                forumCategoryId === category.id && styles.selectedButton,
-              ]}
-              onPress={() => setForumCategoryId(category.id)}
-            >
-              <Text
-                style={[
-                  styles.buttonText,
-                  forumCategoryId === category.id && styles.selectedButtonText,
-                ]}
-              >
-                {getCategoryName(category.name)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      )}
-    </>
+      {forumCategories.map((category) => (
+        <TouchableOpacity
+          key={category.id}
+          style={[
+            styles.button,
+            forumCategoryId === category.id && styles.selectedButton,
+          ]}
+          onPress={() => setForumCategoryId(category.id)}
+        >
+          <Text
+            style={[
+              styles.buttonText,
+              forumCategoryId === category.id && styles.selectedButtonText,
+            ]}
+          >
+            {getForumCategoryName(category.name)}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    height: 35,
+    minHeight: 35,
+    maxHeight: 35,
     flexDirection: "row",
-    marginBottom: 24,
-    paddingHorizontal: 10,
+    marginBottom: 16,
   },
   button: {
     backgroundColor: "#E5E7EB", // gray-200
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 10,
@@ -100,6 +89,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#111827", // gray-900
+    textAlign: "center",
     fontSize: 14,
     fontWeight: "600",
   },

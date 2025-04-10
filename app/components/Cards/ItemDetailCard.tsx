@@ -4,17 +4,18 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ImageSourcePropType,
 } from "react-native";
 import styles from "./styles";
 import { useUsers } from "@/app/context/users/UsersContext";
 import { usePets } from "@/app/context/pets/PetsContext";
 import { useServices } from "@/app/context/services/ServicesContext";
-import { IPet } from "@/app/interface/pet/IPet";
-import { IService } from "@/app/interface/service/IService";
+import IPet from "@/app/interface/pet/IPet";
+import IService from "@/app/interface/service/IService";
 
 interface ItemDetailCardProps {
   itemType: string;
-  imageUrl: string | null;
+  imageUrl: ImageSourcePropType | null;
   status?: string | null;
   price: string | null;
   isAdopted?: boolean;
@@ -39,21 +40,14 @@ const ItemDetailCard: React.FC<ItemDetailCardProps> = ({
 
   return (
     <ScrollView style={styles.detailCard}>
-      {imageUrl && (
-        <Image
-          source={
-            isPet
-              ? require("@/assets/img/pets.jpg")
-              : require("@/assets/img/services.jpg")
-          }
-          style={styles.image}
-        />
-      )}
+      {imageUrl && <Image source={imageUrl} style={styles.image} />}
       <Text style={styles.title}>{data?.name}</Text>
 
       {isPet ? (
         <>
-          <Text style={styles.text}>Species: {(data as IPet)?.species?.name}</Text>
+          <Text style={styles.text}>
+            Species: {(data as IPet)?.species?.name}
+          </Text>
           <Text style={styles.text}>Breed: {(data as IPet)?.breed}</Text>
           <Text style={styles.text}>Age: {(data as IPet)?.age} years</Text>
           <Text style={styles.text}>Gender: {(data as IPet)?.gender}</Text>
@@ -61,8 +55,12 @@ const ItemDetailCard: React.FC<ItemDetailCardProps> = ({
         </>
       ) : (
         <>
-          <Text style={styles.text}>Category: {(data as IService)?.category?.name}</Text>
-          <Text style={styles.text}>Address: {(data as IService)?.address}</Text>
+          <Text style={styles.text}>
+            Category: {(data as IService)?.category?.name}
+          </Text>
+          <Text style={styles.text}>
+            Address: {(data as IService)?.address}
+          </Text>
           <Text style={styles.text}>City: {(data as IService)?.city}</Text>
         </>
       )}

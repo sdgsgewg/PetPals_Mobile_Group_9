@@ -24,24 +24,15 @@ const Login = () => {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <AuthLayout>
-          <View
-            style={[
-              styles.formContainer,
-              { width: isSmallScreen ? "90%" : "70%" },
-            ]}
-          >
-            <AuthForm authType="Login" />
+      <AuthLayout>
+        <AuthForm authType="Login" />
 
-            {loading && (
-              <NormalContent>
-                <Loading />
-              </NormalContent>
-            )}
-          </View>
-        </AuthLayout>
-      </ScrollView>
+        {loading && (
+          <NormalContent>
+            <Loading />
+          </NormalContent>
+        )}
+      </AuthLayout>
     </KeyboardAvoidingView>
   );
 };

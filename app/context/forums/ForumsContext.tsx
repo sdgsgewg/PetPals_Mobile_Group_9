@@ -308,6 +308,8 @@ export function ForumsProvider({ children }: { children: ReactNode }) {
         dispatch({
           type: GlobalActionType.RESET_NEW_FORUM_COMMENT,
         });
+
+        fetchForumPostComments(state.newForumComment.postId);
       } else {
         console.error("Invalid API response format:", response.data);
         dispatch({

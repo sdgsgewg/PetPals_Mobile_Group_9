@@ -2,12 +2,12 @@ import IService from "../service/IService";
 import IUser from "../user/IUser";
 
 interface IServiceTransaction {
-  transaction_id: number;
-  adopter_id: number;
-  provider_id: number;
-  service_id: number;
+  transactionId: number;
+  adopterId: number;
+  providerId: number;
+  serviceId: number;
   transactionType: string;
-  booking_date: string;
+  bookingDate: string;
   price: number;
   status: string;
   adopter: IUser;

@@ -14,8 +14,10 @@ const Header: React.FC<HeaderProps> = ({ title, redirectUrl, addText }) => {
 
   const router = useRouter();
 
-  const goToAddPet = () => {
-    router.push("/adoptions/new");
+  const handleClickAddItem = () => {
+    redirectUrl === "AddNewPet"
+      ? router.push("/adoptions/new")
+      : router.push("/services/new");
   };
 
   return (
@@ -24,7 +26,7 @@ const Header: React.FC<HeaderProps> = ({ title, redirectUrl, addText }) => {
         <Text style={styles.title}>{title}</Text>
       </View>
       <View style={styles.buttonWrapper}>
-        <TouchableOpacity onPress={goToAddPet} style={styles.button}>
+        <TouchableOpacity onPress={handleClickAddItem} style={styles.button}>
           <Text style={styles.buttonText}>{addText}</Text>
         </TouchableOpacity>
       </View>

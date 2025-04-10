@@ -14,7 +14,7 @@ interface IAdoptionTransaction {
   petId: number;
   transactionType: string;
   price: number;
-  booking_date: string;
+  bookingDate: string;
   status: AdoptionStatus;
   adopter: IUser;
   owner: IUser;

@@ -1,10 +1,10 @@
 import { useTransactions } from "@/app/context/transactions/TransactionsContext";
-import Loading from "@/app/loading";
 import React from "react";
 import { FlatList, View, StyleSheet } from "react-native";
 import TransactionCard from "./TransactionCard";
 import ItemNotFound from "../ItemNotFound";
 import { ITransaction } from "@/app/interface/transaction/ITransaction";
+import Loading from "../Loading";
 
 interface TransactionListProps {
   transactionType: string; // history | adoptionReq | serviceReq
@@ -16,13 +16,14 @@ const TransactionList: React.FC<TransactionListProps> = ({
   const { transactions, loading } = useTransactions();
 
   // Assuming the transactions can be of types ITransaction, IAdoptionTransaction, or IServiceTransaction
-  const transactionList = transactionType === "history" ? transactions : transactions;
+  const transactionList =
+    transactionType === "history" ? transactions : transactions;
+
+  if (loading) return <Loading />;
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <Loading />
-      ) : transactions.length > 0 ? (
+      {transactions.length > 0 ? (
         <FlatList
           // Casting the transactionList to ITransaction[]
           data={transactionList as ITransaction[]}
@@ -34,6 +35,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
             />
           )}
           contentContainerStyle={styles.list}
+          bounces={false}
         />
       ) : (
         <ItemNotFound
@@ -48,10 +50,10 @@ const TransactionList: React.FC<TransactionListProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: 520,
   },
   list: {
-    gap: 24,
+    gap: 12,
   },
 });
 

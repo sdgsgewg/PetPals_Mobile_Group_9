@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Loading from "@/app/loading";
 import ItemNotFound from "../ItemNotFound";
 import { useForums } from "@/app/context/forums/ForumsContext";
@@ -31,19 +31,15 @@ const PostComments = () => {
       {forumComments.length > 0 ? (
         <>
           <Text style={styles.title}>Komentar ({forumComments.length})</Text>
-          <FlatList
-            data={forumComments}
-            keyExtractor={(comment) => comment.forumCommentId.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.commentCard}>
-                <Text style={styles.userName}>{item.user.name}</Text>
-                <Text style={styles.commentText}>{item.comment}</Text>
-                <Text style={styles.commentDate}>
-                  {formatDate(item.createdAt)}
-                </Text>
-              </View>
-            )}
-          />
+          {forumComments.map((item) => (
+            <View key={item.forumCommentId} style={styles.commentCard}>
+              <Text style={styles.userName}>{item.user.name}</Text>
+              <Text style={styles.commentText}>{item.comment}</Text>
+              <Text style={styles.commentDate}>
+                {formatDate(item.createdAt)}
+              </Text>
+            </View>
+          ))}
         </>
       ) : (
         <View style={styles.notFoundContainer}>

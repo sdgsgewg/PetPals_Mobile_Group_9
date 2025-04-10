@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Platform } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { useGlobal } from "@/app/context/GlobalContext";
 
 interface Option {
   id: number;
@@ -26,6 +27,8 @@ const SelectField: React.FC<SelectFieldProps> = ({
   error,
   isDisabled,
 }) => {
+  const { getForumCategoryName } = useGlobal();
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
@@ -54,7 +57,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
           {options.map((option) => (
             <Picker.Item
               key={option.id}
-              label={option.name}
+              label={getForumCategoryName(option.name)}
               value={
                 name === "species" || name === "categoryName"
                   ? option.name

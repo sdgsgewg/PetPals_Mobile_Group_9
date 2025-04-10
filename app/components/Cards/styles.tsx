@@ -1,4 +1,19 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+
+const { width: screenWidth } = Dimensions.get("window");
+
+const getButtonWidth = () => {
+  if (screenWidth < 640) {
+    // Tailwind sm: <640px
+    return "100%";
+  } else if (screenWidth < 768) {
+    // Tailwind md: <768px
+    return "75%";
+  } else {
+    // Tailwind lg and up
+    return "50%";
+  }
+};
 
 const styles = StyleSheet.create({
   card: {
@@ -49,7 +64,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#4F46E5",
-    width: "50%",
+    width: getButtonWidth(),
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
@@ -60,7 +75,7 @@ const styles = StyleSheet.create({
   },
   adoptedButton: {
     backgroundColor: "#22c55e",
-    width: "50%",
+    width: getButtonWidth(),
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
@@ -70,7 +85,7 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     backgroundColor: "gray",
-    width: "50%",
+    width: getButtonWidth(),
     padding: 10,
     borderRadius: 5,
     alignItems: "center",

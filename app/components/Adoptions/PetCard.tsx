@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ImageSourcePropType,
+} from "react-native";
 import { useGlobal } from "@/app/context/GlobalContext";
 import IPet from "@/app/interface/pet/IPet";
 import { Router, useRouter } from "expo-router";
@@ -19,6 +26,10 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     });
   };
 
+  let imageUrl: ImageSourcePropType =
+    getImageUrlByBreed(pet?.species?.name, pet?.breed) ??
+    require("@/assets/img/pets.jpg");
+
   return (
     <TouchableOpacity
       onPress={() => goToPetDetail(router, pet.slug)}
@@ -26,11 +37,7 @@ const PetCard: React.FC<PetCardProps> = ({ pet }) => {
     >
       {/* Pet Image */}
       <View style={styles.imageContainer}>
-        <Image
-          // source={{ uri: getImageUrlByBreed(pet?.species?.name, pet?.breed) }}
-          source={require("@/assets/img/pets.jpg")}
-          style={styles.image}
-        />
+        <Image source={imageUrl} style={styles.image} />
       </View>
 
       {/* Pet Info */}

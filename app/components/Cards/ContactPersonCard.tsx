@@ -1,12 +1,7 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Linking,
-} from "react-native";
+import { View, Text, TouchableOpacity, Linking } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { IUser } from "@/app/interface/user/IUser";
+import IUser from "@/app/interface/user/IUser";
 import styles from "./styles";
 
 interface ContactPersonCardProps {

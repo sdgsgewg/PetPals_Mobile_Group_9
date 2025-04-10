@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { IForumPost } from "@/app/interface/forum/IForumPost";
+import IForumPost from "@/app/interface/forum/IForumPost";
 import { useRouter } from "expo-router";
 
 interface PostCardProps {
@@ -26,7 +26,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   };
 
   return (
-    <TouchableOpacity onPress={() => goToPostDetail(post.slug)} style={styles.card}>
+    <TouchableOpacity
+      onPress={() => goToPostDetail(post.slug)}
+      style={styles.card}
+    >
       <Text style={styles.title}>{post.title}</Text>
       <Text style={styles.details}>
         Oleh {post.user.name} • {formatDate(post.createdAt)}
