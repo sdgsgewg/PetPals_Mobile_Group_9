@@ -86,10 +86,7 @@ export default function ProfileScreen() {
 
       {isLoggedIn ? (
         <ThemedView
-          style={[
-            styles.buttonContainer,
-            { flexDirection: isSmallScreen ? "column" : "row" },
-          ]}
+          style={[styles.buttonContainer, { flexDirection: "column" }]}
         >
           {/* Manage Item Menu */}
           {/* My Pets */}

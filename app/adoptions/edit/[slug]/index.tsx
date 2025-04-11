@@ -32,6 +32,7 @@ const EditPet = () => {
     setNewPet,
     editPet,
     loading,
+    error,
   } = usePets();
 
   const [displayPrice, setDisplayPrice] = useState<string>(
@@ -122,8 +123,8 @@ const EditPet = () => {
         {/* Age */}
         <AgeField
           value={newPet.age}
-          onChange={(val) => setNewPet("age", val)}
-          error={newPetErrorMessages.Age}
+          errorMsg={newPetErrorMessages.Age}
+          fromPage="EditPet"
         />
 
         {/* Gender */}
@@ -156,7 +157,14 @@ const EditPet = () => {
         />
 
         {/* Submit */}
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <TouchableOpacity
+          disabled={error !== null}
+          style={[
+            styles.button,
+            error !== null ? styles.buttonDisabled : styles.buttonActive,
+          ]}
+          onPress={handleSubmit}
+        >
           <Text style={styles.buttonText}>Update</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -186,11 +194,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   button: {
-    backgroundColor: "#2563eb",
-    padding: 14,
-    borderRadius: 8,
+    paddingVertical: 10,
+    borderRadius: 12,
     alignItems: "center",
-    marginTop: 12,
+    marginTop: 16,
+  },
+  buttonActive: {
+    backgroundColor: "#2563eb", // Tailwind: bg-blue-600
+  },
+  buttonDisabled: {
+    backgroundColor: "#9ca3af", // Tailwind: bg-gray-400
   },
   buttonText: {
     color: "#fff",

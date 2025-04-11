@@ -35,6 +35,7 @@ interface PetsContextType {
   isIPet: (item: IPet | IService) => item is IPet;
   loading: boolean;
   error: string | null;
+  setErrorMessage: (message: string | null) => void;
 }
 
 const PetsContext = createContext<PetsContextType | undefined>(undefined);
@@ -487,6 +488,10 @@ export function PetsProvider({ children }: { children: ReactNode }) {
     return "species" in item;
   };
 
+  const setErrorMessage = (message: string | null) => {
+    dispatch({ type: GlobalActionType.SET_ERROR, payload: message });
+  };
+
   return (
     <PetsContext.Provider
       value={{
@@ -512,6 +517,7 @@ export function PetsProvider({ children }: { children: ReactNode }) {
         isIPet,
         loading: state.loading,
         error: state.error,
+        setErrorMessage,
       }}
     >
       {children}

@@ -1,22 +1,25 @@
+import { usePets } from "@/app/context/pets/PetsContext";
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, Platform } from "react-native";
 
 interface AgeFieldProps {
   label?: string;
   value: number;
-  onChange: (value: number) => void;
-  error?: string;
+  errorMsg?: string;
+  fromPage?: string;
 }
 
 const AgeField: React.FC<AgeFieldProps> = ({
   label = "Age",
   value,
-  onChange,
-  error,
+  errorMsg,
+  fromPage,
 }) => {
+  const { pet, setNewPet, error, setErrorMessage } = usePets();
+
   const [years, setYears] = useState<string>("0");
   const [months, setMonths] = useState<string>("0");
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   useEffect(() => {
     if (value === undefined || value === null) return;
@@ -30,9 +33,10 @@ const AgeField: React.FC<AgeFieldProps> = ({
     ) {
       setYears(parsedYears.toString());
       setMonths(parsedMonths.toString());
-      setIsInitialized(false); // prevent triggering onChange immediately
-      setTimeout(() => setIsInitialized(true), 0); // delay enable trigger
     }
+
+    setIsInitialized(false); // prevent triggering onChange immediately
+    setTimeout(() => setIsInitialized(true), 0); // delay enable trigger
   }, [value]);
 
   useEffect(() => {
@@ -42,9 +46,11 @@ const AgeField: React.FC<AgeFieldProps> = ({
     const monthVal = Math.min(parseInt(months) || 0, 11);
     const ageDecimal = parseFloat((yearVal + monthVal / 12).toFixed(2));
 
-    // Cek apakah ageDecimal berbeda dari value yang ada
-    if (Math.abs(value - ageDecimal) > 0.01) {
-      onChange(ageDecimal);
+    if (pet.age > ageDecimal && fromPage === "EditPet") {
+      setErrorMessage("New age cannot be greater than current age.");
+    } else {
+      setErrorMessage(null);
+      setNewPet("age", ageDecimal);
     }
   }, [years, months]);
 
@@ -91,7 +97,13 @@ const AgeField: React.FC<AgeFieldProps> = ({
           />
         </View>
       </View>
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {/* Error message from backend */}
+      {errorMsg && <Text style={styles.errorText}>{errorMsg}</Text>}
+
+      {/* Error message from context */}
+      {error !== null && fromPage === "EditPet" && (
+        <Text style={styles.errorText}>{error}</Text>
+      )}
     </View>
   );
 };

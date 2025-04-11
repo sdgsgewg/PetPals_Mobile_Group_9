@@ -112,7 +112,16 @@ const NewPet = () => {
         {/* Age */}
         <AgeField
           value={newPet.age}
-          onChange={(val) => setNewPet("age", val)}
+          errorMsg={newPetErrorMessages.Age}
+          fromPage="AddNewPet"
+        />
+
+        <InputField
+          label="Age"
+          name="age"
+          placeholder="Age"
+          value={newPet.age}
+          onChange={handleInputChange}
           error={newPetErrorMessages.Age}
         />
 
